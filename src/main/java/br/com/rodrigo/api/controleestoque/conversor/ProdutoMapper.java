@@ -26,15 +26,6 @@ public class ProdutoMapper implements IMapper<Produto, ProdutoForm, ProdutoRespo
     }
 
     @Override
-    public Produto formParaEntidade(ProdutoForm form) {
-        return Produto.builder()
-                .descricao(form.getDescricao())
-                .valorFornecedor(form.getValorFornecedor())
-                .quantidadeEstoque(form.getQuantidadeEstoque())
-                .build();
-    }
-
-    @Override
     public Produto responseParaEntidade(ProdutoResponse response) {
         return Produto.builder()
                 .id(response.getId())

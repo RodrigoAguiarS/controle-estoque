@@ -24,13 +24,6 @@ public class ItemVendaMapper implements IMapper<ItemVenda, ItemVendaForm, ItemVe
     }
 
     @Override
-    public ItemVenda formParaEntidade(ItemVendaForm form) {
-        return ItemVenda.builder()
-                .quantidade(form.getQuantidade())
-                .build();
-    }
-
-    @Override
     public ItemVenda responseParaEntidade(ItemVendaResponse response) {
         return ItemVenda.builder()
                 .id(response.getId())

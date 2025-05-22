@@ -5,6 +5,8 @@ import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.ItemVenda;
 import br.com.rodrigo.api.controleestoque.model.Produto;
+import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
+import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
 import br.com.rodrigo.api.controleestoque.model.Venda;
 import br.com.rodrigo.api.controleestoque.model.form.ItemVendaForm;
 import br.com.rodrigo.api.controleestoque.model.form.VendaForm;
@@ -12,6 +14,7 @@ import br.com.rodrigo.api.controleestoque.model.response.VendaResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.repository.VendaRepository;
 import br.com.rodrigo.api.controleestoque.service.IVenda;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +37,7 @@ public class VendaServiceImpl implements IVenda {
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
     private final VendaMapper vendaMapper;
+    private final MovimentacaoEstoqueService movimentacaoService;
 
     @Override
     public VendaResponse realizarVenda(VendaForm vendaForm) {
@@ -67,10 +72,22 @@ public class VendaServiceImpl implements IVenda {
     }
 
     @Override
+    @Transactional
     public void cancelarVenda(Long id) {
         Venda venda = vendaRepository.findById(id)
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.VENDA_NAO_ENCONTRADA.getMessage(id)));
+
+        venda.getItens().stream()
+                .filter(item -> item.getQuantidade() > 0)
+                .forEach(item -> movimentacaoService.processarMovimentacao(
+                        item.getProduto(),
+                        TipoMovimentacao.ENTRADA,
+                        TipoOperacao.CANCELAMENTO_VENDA,
+                        item.getQuantidade(),
+                        item.getValorTotal()
+                ));
+
         venda.desativar();
         vendaRepository.save(venda);
     }
@@ -85,25 +102,18 @@ public class VendaServiceImpl implements IVenda {
 
         Venda venda = new Venda();
 
-        venda.setItens(vendaForm.getItens().stream()
-                .map(itemForm -> {
-                    ItemVenda itemVenda = new ItemVenda();
-                    itemVenda.setVenda(venda);
+        List<ItemVenda> itens = vendaForm.getItens().stream()
+                .map(itemForm -> criarItemVenda(itemForm, produtoMap, venda))
+                .peek(item -> movimentacaoService.processarMovimentacao(
+                        item.getProduto(),
+                        TipoMovimentacao.SAIDA,
+                        TipoOperacao.VENDA,
+                        item.getQuantidade(),
+                        item.getValorTotal()
+                ))
+                .collect(Collectors.toList());
 
-                    Produto produto = produtoMap.get(itemForm.getProdutoId());
-                    if (produto == null) {
-                        throw new ObjetoNaoEncontradoException(
-                                MensagensError.PRODUTO_NAO_ENCONTRADO.getMessage(itemForm.getProdutoId()));
-                    }
-
-                    itemVenda.setProduto(produto);
-                    itemVenda.setQuantidade(itemForm.getQuantidade());
-                    itemVenda.setValorUnitario(produto.getValorFornecedor());
-                    itemVenda.setValorTotal(itemVenda.getValorUnitario()
-                            .multiply(BigDecimal.valueOf(itemVenda.getQuantidade())));
-                    return itemVenda;
-                })
-                .collect(Collectors.toList()));
+        venda.setItens(itens);
 
         venda.setValorTotal(venda.getItens().stream()
                 .map(ItemVenda::getValorTotal)
@@ -112,6 +122,21 @@ public class VendaServiceImpl implements IVenda {
         venda.setObservacao(vendaForm.getObservacao());
 
         return venda;
+    }
+
+    private ItemVenda criarItemVenda(ItemVendaForm itemForm, Map<Long, Produto> produtoMap, Venda venda) {
+        Produto produto = Optional.ofNullable(produtoMap.get(itemForm.getProdutoId()))
+                .orElseThrow(() -> new ObjetoNaoEncontradoException(
+                        MensagensError.PRODUTO_NAO_ENCONTRADO.getMessage(itemForm.getProdutoId())));
+
+        return ItemVenda.builder()
+                .venda(venda)
+                .produto(produto)
+                .quantidade(itemForm.getQuantidade())
+                .valorUnitario(produto.getValorFornecedor())
+                .valorTotal(produto.getValorFornecedor()
+                        .multiply(BigDecimal.valueOf(itemForm.getQuantidade())))
+                .build();
     }
 
     private VendaResponse construirDto(Venda venda) {

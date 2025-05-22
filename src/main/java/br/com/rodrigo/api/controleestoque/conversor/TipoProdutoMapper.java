@@ -18,14 +18,6 @@ public class TipoProdutoMapper implements IMapper<TipoProduto, TipoProdutoForm, 
     }
 
     @Override
-    public TipoProduto formParaEntidade(TipoProdutoForm form) {
-        return TipoProduto.builder()
-                .nome(form.getNome())
-                .descricao(form.getDescricao())
-                .build();
-    }
-
-    @Override
     public TipoProduto responseParaEntidade(TipoProdutoResponse response) {
         return TipoProduto.builder()
                 .id(response.getId())

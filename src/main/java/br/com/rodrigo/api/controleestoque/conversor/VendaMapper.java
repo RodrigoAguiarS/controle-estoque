@@ -27,13 +27,6 @@ public class VendaMapper implements IMapper<Venda, VendaForm, VendaResponse> {
     }
 
     @Override
-    public Venda formParaEntidade(VendaForm form) {
-        return Venda.builder()
-                .observacao(form.getObservacao())
-                .build();
-    }
-
-    @Override
     public Venda responseParaEntidade(VendaResponse response) {
         return Venda.builder()
                 .id(response.getId())
