@@ -1,6 +1,5 @@
 package br.com.rodrigo.api.controleestoque.model.response;
 
-import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

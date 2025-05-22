@@ -1,12 +1,11 @@
 package br.com.rodrigo.api.controleestoque.conversor;
 
 import br.com.rodrigo.api.controleestoque.model.TipoProduto;
-import br.com.rodrigo.api.controleestoque.model.form.TipoProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TipoProdutoMapper implements IMapper<TipoProduto, TipoProdutoForm, TipoProdutoResponse> {
+public class TipoProdutoMapper implements IMapper<TipoProduto, TipoProdutoResponse> {
 
     @Override
     public TipoProdutoResponse entidadeParaResponse(TipoProduto entidade) {

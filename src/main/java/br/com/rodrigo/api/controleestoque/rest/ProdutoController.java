@@ -31,24 +31,24 @@ public class ProdutoController extends ControllerBase<ProdutoResponse> {
     @PostMapping
     public ResponseEntity<ProdutoResponse> criar(@RequestBody @Valid ProdutoForm produtoForm, UriComponentsBuilder uriBuilder) {
         ProdutoResponse response = produtoService.criar(null, produtoForm);
-        return responderItemCriadoComURI(response, uriBuilder, "/tarefas/{id}", response.getId().toString());
+        return responderItemCriadoComURI(response, uriBuilder, "/tarefas/{idProduto}", response.getId().toString());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id, @RequestBody @Valid ProdutoForm produtoForm) {
-        ProdutoResponse response = produtoService.criar(id, produtoForm);
+    @PutMapping("/{idProduto}")
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long idProduto, @RequestBody @Valid ProdutoForm produtoForm) {
+        ProdutoResponse response = produtoService.criar(idProduto, produtoForm);
         return responderSucessoComItem(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ProdutoResponse> deletar(@PathVariable Long id) {
-        produtoService.deletar(id);
+    @DeleteMapping("/{idProduto}")
+    public ResponseEntity<ProdutoResponse> deletar(@PathVariable Long idProduto) {
+        produtoService.deletar(idProduto);
         return responderSucesso();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProdutoResponse> consultarPorId(@PathVariable Long id) {
-        Optional<ProdutoResponse> response = produtoService.consultarPorId(id);
+    @GetMapping("/{idProduto}")
+    public ResponseEntity<ProdutoResponse> consultarPorId(@PathVariable Long idProduto) {
+        Optional<ProdutoResponse> response = produtoService.consultarPorId(idProduto);
         return response.map(this::responderSucessoComItem)
                 .orElseGet(this::responderItemNaoEncontrado);
     }

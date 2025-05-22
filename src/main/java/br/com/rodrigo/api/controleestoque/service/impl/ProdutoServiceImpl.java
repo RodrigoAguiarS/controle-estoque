@@ -74,14 +74,21 @@ public class ProdutoServiceImpl implements IProduto {
 
         produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
-        produto.setQuantidadeEstoque(produtoForm.getQuantidadeEstoque());
         produto.setDescricao(produtoForm.getDescricao());
+        processarMovimentacaoEstoque(produto, produtoForm);
 
-        int quantidadeAnterior = produto.getQuantidadeEstoque() != null ? produto.getQuantidadeEstoque() : BigDecimal.ZERO.intValue();
-        int novaDiferenca = produtoForm.getQuantidadeEstoque() - quantidadeAnterior;
+        return produto;
+    }
+
+    private void processarMovimentacaoEstoque(Produto produto, ProdutoForm produtoForm) {
+        int quantidadeAnterior = produto.getQuantidadeEstoque() != null ?
+                produto.getQuantidadeEstoque() : BigDecimal.ZERO.intValue();
+        int novaQuantidade = produtoForm.getQuantidadeEstoque();
+        int novaDiferenca = novaQuantidade - quantidadeAnterior;
 
         if (novaDiferenca != BigDecimal.ZERO.intValue()) {
-            TipoMovimentacao tipo = novaDiferenca > BigDecimal.ZERO.intValue() ? TipoMovimentacao.ENTRADA : TipoMovimentacao.SAIDA;
+            TipoMovimentacao tipo = novaDiferenca > BigDecimal.ZERO.intValue() ?
+                    TipoMovimentacao.ENTRADA : TipoMovimentacao.SAIDA;
             int quantidadeMovimentacao = Math.abs(novaDiferenca);
             BigDecimal valorMovimentacao = BigDecimal.valueOf(quantidadeMovimentacao)
                     .multiply(produtoForm.getValorFornecedor());
@@ -93,9 +100,9 @@ public class ProdutoServiceImpl implements IProduto {
                     quantidadeMovimentacao,
                     valorMovimentacao
             );
-        }
 
-        return produto;
+            produto.setQuantidadeEstoque(novaQuantidade);
+        }
     }
 
     private ProdutoResponse construirDto(Produto produto) {
