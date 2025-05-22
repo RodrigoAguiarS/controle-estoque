@@ -4,7 +4,8 @@ public enum MensagensError {
 
 
     TIPO_PRODUTO_NAO_ENCONTRADO("Tipo de produto não encontrado para o id %s"),
-    TIPO_PRODUTO_NAO_PODE_SER_APAGADO("Tipo de produto não pode ser apagado, pois possui produtos associados");
+    TIPO_PRODUTO_NAO_PODE_SER_APAGADO("Tipo de produto não pode ser apagado, pois possui produtos associados"),
+    PRODUTO_NAO_ENCONTRADO("Produto não encontrado para o id %s"),;
 
     private final String message;
 

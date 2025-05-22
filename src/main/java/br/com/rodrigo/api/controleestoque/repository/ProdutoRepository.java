@@ -1,0 +1,29 @@
+package br.com.rodrigo.api.controleestoque.repository;
+
+import br.com.rodrigo.api.controleestoque.model.Produto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+
+public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+
+    @Query("SELECT p FROM Produto p " +
+            "JOIN p.tipoProduto tp " +
+            "WHERE (:id IS NULL OR p.id = :id) " +
+            "AND p.ativo = true " +
+            "AND (:descricao IS NULL OR LOWER(p.descricao) LIKE %:descricao%) " +
+            "AND (:valorFornecedor IS NULL OR p.valorFornecedor = :valorFornecedor) " +
+            "AND (:quantidadeEstoque IS NULL OR p.quantidadeEstoque = :quantidadeEstoque) " +
+            "AND (:tipoProdutoId IS NULL OR tp.id = :tipoProdutoId) " +
+            "ORDER BY p.criadoEm DESC")
+    Page<Produto> findAll(@Param("id") Long id,
+                          @Param("descricao") String descricao,
+                          @Param("valorFornecedor") BigDecimal valorFornecedor,
+                          @Param("quantidadeEstoque") Integer quantidadeEstoque,
+                          @Param("tipoProdutoId") Long tipoProdutoId,
+                          Pageable pageable);
+}
