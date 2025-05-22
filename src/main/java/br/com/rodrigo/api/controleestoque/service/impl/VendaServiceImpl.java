@@ -1,5 +1,6 @@
 package br.com.rodrigo.api.controleestoque.service.impl;
 
+import br.com.rodrigo.api.controleestoque.conversor.FormaDePagamentoMapper;
 import br.com.rodrigo.api.controleestoque.conversor.VendaMapper;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
@@ -10,9 +11,11 @@ import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
 import br.com.rodrigo.api.controleestoque.model.Venda;
 import br.com.rodrigo.api.controleestoque.model.form.ItemVendaForm;
 import br.com.rodrigo.api.controleestoque.model.form.VendaForm;
+import br.com.rodrigo.api.controleestoque.model.response.FormaDePagamentoResponse;
 import br.com.rodrigo.api.controleestoque.model.response.VendaResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.repository.VendaRepository;
+import br.com.rodrigo.api.controleestoque.service.IFormaDePagamento;
 import br.com.rodrigo.api.controleestoque.service.IVenda;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +40,8 @@ public class VendaServiceImpl implements IVenda {
 
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
+    private final IFormaDePagamento formaDePagamentoService;
+    private final FormaDePagamentoMapper formaDePagamentoMapper;
     private final VendaMapper vendaMapper;
     private final MovimentacaoEstoqueService movimentacaoService;
 
@@ -101,6 +107,11 @@ public class VendaServiceImpl implements IVenda {
         Map<Long, Produto> produtoMap = produtoRepository.findAllById(produtoIds).stream()
                 .collect(Collectors.toMap(Produto::getId, produto -> produto));
 
+        FormaDePagamentoResponse formaDePagamento = formaDePagamentoService
+                .consultarPorId(vendaForm.getFormaDePagamentoId())
+                .orElseThrow(() -> new ObjetoNaoEncontradoException(
+                        MensagensError.FORMA_PAGAMENTO_NAO_ENCONTRADA.getMessage(vendaForm.getFormaDePagamentoId())));
+
         Venda venda = new Venda();
 
         List<ItemVenda> itens = vendaForm.getItens().stream()
@@ -115,11 +126,19 @@ public class VendaServiceImpl implements IVenda {
                 .collect(Collectors.toList());
 
         venda.setItens(itens);
+        venda.setFormaDePagamento(formaDePagamentoMapper.responseParaEntidade(formaDePagamento));
 
-        venda.setValorTotal(venda.getItens().stream()
+        BigDecimal valorTotal = venda.getItens().stream()
                 .map(ItemVenda::getValorTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        BigDecimal acrescimo = venda.getFormaDePagamento().getPorcentagemAcrescimo()
+                .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP);
+        BigDecimal valorAcrescimo = valorTotal.multiply(acrescimo);
+        BigDecimal valorTotalComAcrescimo = valorTotal.add(valorAcrescimo)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        venda.setValorTotal(valorTotalComAcrescimo);
         venda.setObservacao(vendaForm.getObservacao());
 
         return venda;
@@ -134,8 +153,8 @@ public class VendaServiceImpl implements IVenda {
                 .venda(venda)
                 .produto(produto)
                 .quantidade(itemForm.getQuantidade())
-                .valorUnitario(produto.getValorFornecedor())
-                .valorTotal(produto.getValorFornecedor()
+                .valorUnitario(produto.getValorVenda())
+                .valorTotal(produto.getValorVenda()
                         .multiply(BigDecimal.valueOf(itemForm.getQuantidade())))
                 .build();
     }

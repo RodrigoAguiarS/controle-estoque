@@ -19,6 +19,7 @@ public class ProdutoResponse {
     private String descricao;
     private TipoProdutoResponse tipoProduto;
     private BigDecimal valorFornecedor;
+    private BigDecimal valorVenda;
     private Integer quantidadeEstoque;
     private LocalDateTime dataCriacao;
     private Boolean ativo;

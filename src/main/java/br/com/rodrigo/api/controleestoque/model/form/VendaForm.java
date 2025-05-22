@@ -14,9 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VendaForm {
-    @NotEmpty(message = "A lista de itens n„o pode estar vazia")
+    @NotEmpty(message = "A lista de itens n√£o pode estar vazia")
     @Valid
     private List<ItemVendaForm> itens;
+
+    private Long formaDePagamentoId;
 
     private String observacao;
 }
