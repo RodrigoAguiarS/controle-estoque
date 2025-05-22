@@ -6,7 +6,8 @@ public enum MensagensError {
     VENDA_NAO_ENCONTRADA("Venda não encontrada para o id %s"),
     MOVIMENTACAO_NAO_ENCONTRADA("Movimentação não encontrada para o id %s"),
     ESTOQUE_INSUFICIENTE("Estoque insuficiente para o produto %s"),
-    PRODUTO_NAO_ENCONTRADO("Produto não encontrado para o id %s");
+    PRODUTO_NAO_ENCONTRADO("Produto não encontrado para o id %s"),
+    FORMA_PAGAMENTO_NAO_ENCONTRADA("Forma de pagamento não encontrada para o id %s"),;
 
     private final String message;
 

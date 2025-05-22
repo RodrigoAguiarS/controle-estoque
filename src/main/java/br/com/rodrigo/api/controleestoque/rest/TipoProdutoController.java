@@ -33,21 +33,21 @@ public class TipoProdutoController extends ControllerBase<TipoProdutoResponse> {
         return responderItemCriadoComURI(response, ServletUriComponentsBuilder.fromCurrentRequest(), "/{id}", response.getId().toString());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TipoProdutoResponse> atualizar(@PathVariable @Valid Long id, @RequestBody TipoProdutoForm tipoProdutoForm) {
-        TipoProdutoResponse response = tipoProdutoService.atualizar(id, tipoProdutoForm);
+    @PutMapping("/{idTipoProduto}")
+    public ResponseEntity<TipoProdutoResponse> atualizar(@PathVariable @Valid Long idTipoProduto, @RequestBody TipoProdutoForm tipoProdutoForm) {
+        TipoProdutoResponse response = tipoProdutoService.atualizar(idTipoProduto, tipoProdutoForm);
         return responderSucessoComItem(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<TipoProdutoResponse> deletar(@PathVariable Long id) {
-        tipoProdutoService.deletar(id);
+    @DeleteMapping("/{idTipoProduto}")
+    public ResponseEntity<TipoProdutoResponse> deletar(@PathVariable Long idTipoProduto) {
+        tipoProdutoService.deletar(idTipoProduto);
         return responderSucesso();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TipoProdutoResponse> consultarPorId(@PathVariable Long id) {
-        Optional<TipoProdutoResponse> response = tipoProdutoService.consultarPorId(id);
+    @GetMapping("/{idTipoProduto}")
+    public ResponseEntity<TipoProdutoResponse> consultarPorId(@PathVariable Long idTipoProduto) {
+        Optional<TipoProdutoResponse> response = tipoProdutoService.consultarPorId(idTipoProduto);
         return response.map(this::responderSucessoComItem)
                 .orElseGet(this::responderItemNaoEncontrado);
     }

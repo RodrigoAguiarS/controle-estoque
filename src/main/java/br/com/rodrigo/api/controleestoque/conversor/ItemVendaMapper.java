@@ -1,14 +1,13 @@
 package br.com.rodrigo.api.controleestoque.conversor;
 
 import br.com.rodrigo.api.controleestoque.model.ItemVenda;
-import br.com.rodrigo.api.controleestoque.model.form.ItemVendaForm;
 import br.com.rodrigo.api.controleestoque.model.response.ItemVendaResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ItemVendaMapper implements IMapper<ItemVenda, ItemVendaForm, ItemVendaResponse> {
+public class ItemVendaMapper implements IMapper<ItemVenda, ItemVendaResponse> {
 
     private final ProdutoMapper produtoMapper;
 

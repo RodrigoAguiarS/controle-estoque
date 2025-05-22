@@ -40,6 +40,7 @@ public class VendaServiceImpl implements IVenda {
     private final MovimentacaoEstoqueService movimentacaoService;
 
     @Override
+    @Transactional
     public VendaResponse realizarVenda(VendaForm vendaForm) {
         Venda venda = criarVenda(vendaForm);
         venda = vendaRepository.save(venda);

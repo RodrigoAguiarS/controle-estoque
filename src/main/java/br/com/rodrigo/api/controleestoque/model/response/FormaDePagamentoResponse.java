@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemVendaResponse {
+public class FormaDePagamentoResponse {
     private Long id;
-    private ProdutoResponse produto;
-    private Integer quantidade;
-    private BigDecimal valorUnitario;
-    private BigDecimal valorTotal;
+    private String nome;
+    private String descricao;
+    private BigDecimal porcentagemAcrescimo;
+    private Boolean ativo;
 }
