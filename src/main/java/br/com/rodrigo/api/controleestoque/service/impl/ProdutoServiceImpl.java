@@ -7,6 +7,7 @@ import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
+import br.com.rodrigo.api.controleestoque.model.TipoProduto;
 import br.com.rodrigo.api.controleestoque.model.form.ProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 @Service
@@ -72,8 +74,13 @@ public class ProdutoServiceImpl implements IProduto {
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(produtoForm.getTipoProdutoId())));
 
+        BigDecimal valorFornecedor = produtoForm.getValorFornecedor();
+        produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
+        BigDecimal valorVenda = calcularValorVenda(valorFornecedor, produto.getTipoProduto());
+
         produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
+        produto.setValorVenda(valorVenda);
         produto.setDescricao(produtoForm.getDescricao());
         processarMovimentacaoEstoque(produto, produtoForm);
 
@@ -103,6 +110,15 @@ public class ProdutoServiceImpl implements IProduto {
 
             produto.setQuantidadeEstoque(novaQuantidade);
         }
+    }
+
+    public BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
+        BigDecimal fatorMultiplicacao = tipoProduto.getMargemLucro()
+                .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP)
+                .add(BigDecimal.ONE);
+
+        return valorFornecedor.multiply(fatorMultiplicacao)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private ProdutoResponse construirDto(Produto produto) {

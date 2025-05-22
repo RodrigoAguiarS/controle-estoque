@@ -16,17 +16,17 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProdutoForm {
-    @NotBlank(message = "A descrição é obrigatória")
+    @NotBlank(message = "A descriÃ§Ã£o Ã© obrigatÃ³ria")
     private String descricao;
 
-    @NotNull(message = "O tipo do produto é obrigatório")
+    @NotNull(message = "O tipo do produto Ã© obrigatÃ³rio")
     private Long tipoProdutoId;
 
-    @NotNull(message = "O valor do fornecedor é obrigatório")
+    @NotNull(message = "O valor do fornecedor Ã© obrigatÃ³rio")
     @Positive(message = "O valor do fornecedor deve ser positivo")
     private BigDecimal valorFornecedor;
 
-    @NotNull(message = "A quantidade em estoque é obrigatória")
+    @NotNull(message = "A quantidade em estoque Ã© obrigatÃ³ria")
     @PositiveOrZero(message = "A quantidade em estoque deve ser zero ou positiva")
     private Integer quantidadeEstoque;
 }

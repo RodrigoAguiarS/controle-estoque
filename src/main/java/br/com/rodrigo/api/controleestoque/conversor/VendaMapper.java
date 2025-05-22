@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class VendaMapper implements IMapper<Venda, VendaResponse> {
 
     private final ItemVendaMapper itemVendaMapper;
+    private final FormaDePagamentoMapper formaDePagamentoMapper;
 
     @Override
     public VendaResponse entidadeParaResponse(Venda venda) {
@@ -19,6 +20,7 @@ public class VendaMapper implements IMapper<Venda, VendaResponse> {
                         .map(itemVendaMapper::entidadeParaResponse)
                         .toList())
                 .valorTotal(venda.getValorTotal())
+                .formaDePagamento(formaDePagamentoMapper.entidadeParaResponse(venda.getFormaDePagamento()))
                 .observacao(venda.getObservacao())
                 .criadoEm(venda.getCriadoEm())
                 .ativo(venda.getAtivo())
@@ -32,6 +34,7 @@ public class VendaMapper implements IMapper<Venda, VendaResponse> {
                 .itens(response.getItens().stream()
                         .map(itemVendaMapper::responseParaEntidade)
                         .toList())
+                .formaDePagamento(formaDePagamentoMapper.responseParaEntidade(response.getFormaDePagamento()))
                 .valorTotal(response.getValorTotal())
                 .observacao(response.getObservacao())
                 .build();

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -43,6 +44,7 @@ public class TipoProdutoServiceImpl implements ITipoProduto {
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(id)));
 
         tipoProduto.setNome(tipoProdutoForm.getNome());
+        tipoProduto.setMargemLucro(tipoProdutoForm.getMargemLucro());
         tipoProduto.setDescricao(tipoProdutoForm.getDescricao());
 
         return tipoProduto;

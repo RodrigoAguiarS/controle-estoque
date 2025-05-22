@@ -25,6 +25,7 @@ public class Produto extends EntidadeBase {
     @ManyToOne
     @JoinColumn(name = "tipo_produto_id", nullable = false)
     private TipoProduto tipoProduto;
+    private BigDecimal valorVenda;
     private BigDecimal valorFornecedor;
     private Integer quantidadeEstoque;
 }

@@ -18,6 +18,7 @@ public class ProdutoMapper implements IMapper<Produto, ProdutoResponse> {
                 .descricao(entidade.getDescricao())
                 .tipoProduto(tipoProdutoMapper.entidadeParaResponse(entidade.getTipoProduto()))
                 .valorFornecedor(entidade.getValorFornecedor())
+                .valorVenda(entidade.getValorVenda())
                 .quantidadeEstoque(entidade.getQuantidadeEstoque())
                 .dataCriacao(entidade.getCriadoEm())
                 .ativo(entidade.getAtivo())
@@ -30,6 +31,7 @@ public class ProdutoMapper implements IMapper<Produto, ProdutoResponse> {
                 .id(response.getId())
                 .descricao(response.getDescricao())
                 .valorFornecedor(response.getValorFornecedor())
+                .valorVenda(response.getValorVenda())
                 .quantidadeEstoque(response.getQuantidadeEstoque())
                 .build();
     }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "tipo_produto")
@@ -20,4 +21,5 @@ public class TipoProduto extends EntidadeBase {
 
     private String nome;
     private String descricao;
+    private BigDecimal margemLucro;
 }
