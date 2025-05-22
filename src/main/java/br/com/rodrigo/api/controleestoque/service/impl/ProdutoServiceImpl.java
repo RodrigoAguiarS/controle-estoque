@@ -5,12 +5,15 @@ import br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.Produto;
+import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
+import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
 import br.com.rodrigo.api.controleestoque.model.form.ProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.service.IProduto;
 import br.com.rodrigo.api.controleestoque.service.ITipoProduto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,11 +32,12 @@ public class ProdutoServiceImpl implements IProduto {
     private final TipoProdutoMapper tipoProdutoMapper;
     private final ProdutoMapper produtoMapper;
     private final ITipoProduto tipoProdutoService;
+    private final MovimentacaoEstoqueService movimentacaoService;
 
     @Override
+    @Transactional
     public ProdutoResponse criar(Long idProduto, ProdutoForm produtoForm) {
         Produto produto = criaProduto(produtoForm, idProduto);
-        produto = produtoRepository.save(produto);
         return construirDto(produto);
     }
 
@@ -68,10 +72,28 @@ public class ProdutoServiceImpl implements IProduto {
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(produtoForm.getTipoProdutoId())));
 
-        produto.setDescricao(produtoForm.getDescricao());
         produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
         produto.setQuantidadeEstoque(produtoForm.getQuantidadeEstoque());
+        produto.setDescricao(produtoForm.getDescricao());
+
+        int quantidadeAnterior = produto.getQuantidadeEstoque() != null ? produto.getQuantidadeEstoque() : BigDecimal.ZERO.intValue();
+        int novaDiferenca = produtoForm.getQuantidadeEstoque() - quantidadeAnterior;
+
+        if (novaDiferenca != BigDecimal.ZERO.intValue()) {
+            TipoMovimentacao tipo = novaDiferenca > BigDecimal.ZERO.intValue() ? TipoMovimentacao.ENTRADA : TipoMovimentacao.SAIDA;
+            int quantidadeMovimentacao = Math.abs(novaDiferenca);
+            BigDecimal valorMovimentacao = BigDecimal.valueOf(quantidadeMovimentacao)
+                    .multiply(produtoForm.getValorFornecedor());
+
+            movimentacaoService.processarMovimentacao(
+                    produto,
+                    tipo,
+                    TipoOperacao.CADASTRO_PRODUTO,
+                    quantidadeMovimentacao,
+                    valorMovimentacao
+            );
+        }
 
         return produto;
     }
