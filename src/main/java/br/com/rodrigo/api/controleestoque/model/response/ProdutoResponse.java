@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,6 +22,7 @@ public class ProdutoResponse {
     private BigDecimal valorFornecedor;
     private BigDecimal valorVenda;
     private Integer quantidadeEstoque;
+    private List<String> arquivosUrl;
     private LocalDateTime dataCriacao;
     private Boolean ativo;
 }

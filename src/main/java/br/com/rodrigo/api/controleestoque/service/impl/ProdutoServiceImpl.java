@@ -14,6 +14,7 @@ import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.service.IProduto;
 import br.com.rodrigo.api.controleestoque.service.ITipoProduto;
+import br.com.rodrigo.api.controleestoque.service.S3StorageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
+import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
+
 @Service
 @RequiredArgsConstructor
 public class ProdutoServiceImpl implements IProduto {
@@ -34,6 +37,7 @@ public class ProdutoServiceImpl implements IProduto {
     private final TipoProdutoMapper tipoProdutoMapper;
     private final ProdutoMapper produtoMapper;
     private final ITipoProduto tipoProdutoService;
+    private final S3StorageService s3StorageService;
     private final MovimentacaoEstoqueService movimentacaoService;
 
     @Override
@@ -48,6 +52,12 @@ public class ProdutoServiceImpl implements IProduto {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.PRODUTO_NAO_ENCONTRADO.getMessage(id)));
+
+        if (isNotEmpty(produto.getArquivosUrl())) {
+            for (String fileUrl : produto.getArquivosUrl()) {
+                s3StorageService.apagarArquivo(fileUrl);
+            }
+        }
         produto.desativar();
         produtoRepository.save(produto);
     }
@@ -80,6 +90,7 @@ public class ProdutoServiceImpl implements IProduto {
 
         produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
+        produto.setArquivosUrl(produtoForm.getArquivosUrl());
         produto.setValorVenda(valorVenda);
         produto.setDescricao(produtoForm.getDescricao());
         processarMovimentacaoEstoque(produto, produtoForm);
