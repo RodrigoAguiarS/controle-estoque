@@ -34,7 +34,7 @@ public class DateConverterUtil {
             }
         }
 
-        throw new DateTimeParseException("Não foi possível parsear a data: " + dateString, dateString, 0);
+        throw new DateTimeParseException("NÃ£o foi possÃ­vel parsear a data: " + dateString, dateString, 0);
     }
 
     private static LocalDateTime ajustarHorario(LocalDateTime dateTime, boolean inicioDoDia) {

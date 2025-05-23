@@ -14,16 +14,17 @@ import java.time.LocalDateTime;
 public interface VendaRepository extends JpaRepository<Venda, Long> {
 
     @Query("""
-        SELECT v
-        FROM Venda v
-        WHERE v.id = COALESCE(:id, v.id)
-          AND v.valorTotal >= COALESCE(:valorMinimo, v.valorTotal)
-          AND v.valorTotal <= COALESCE(:valorMaximo, v.valorTotal)
-          AND v.criadoEm >= COALESCE(:dataInicio, v.criadoEm)
-          AND v.criadoEm <= COALESCE(:dataFim, v.criadoEm)
-          AND v.ativo = COALESCE(:ativo, v.ativo)
-        ORDER BY v.criadoEm DESC, v.id
-    """)
+    SELECT v
+    FROM Venda v
+    WHERE v.id = COALESCE(:id, v.id)
+      AND v.valorTotal >= COALESCE(:valorMinimo, v.valorTotal)
+      AND v.valorTotal <= COALESCE(:valorMaximo, v.valorTotal)
+      AND v.criadoEm >= COALESCE(:dataInicio, v.criadoEm)
+      AND v.criadoEm <= COALESCE(:dataFim, v.criadoEm)
+      AND v.ativo = COALESCE(:ativo, v.ativo)
+      AND v.formaDePagamento.id = COALESCE(:formaDePagamentoId, v.formaDePagamento.id)
+    ORDER BY v.criadoEm DESC, v.id
+""")
     Page<Venda> findAll(
             @Param("id") Long id,
             @Param("valorMinimo") BigDecimal valorMinimo,
@@ -31,6 +32,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             @Param("ativo") Boolean ativo,
+            @Param("formaDePagamentoId") Long formaDePagamentoId,
             Pageable pageable
     );
 

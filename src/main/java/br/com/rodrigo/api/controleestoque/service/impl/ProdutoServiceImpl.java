@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
@@ -123,13 +124,24 @@ public class ProdutoServiceImpl implements IProduto {
         }
     }
 
-    public BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
+    private BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
         BigDecimal fatorMultiplicacao = tipoProduto.getMargemLucro()
                 .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP)
                 .add(BigDecimal.ONE);
 
         return valorFornecedor.multiply(fatorMultiplicacao)
                 .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    @Override
+    public List<ProdutoResponse> buscarPorIdOuDescricao(Long id, String descricao) {
+        List<Produto> produtos = produtoRepository.findByIdOrDescricao(id, descricao);
+        return produtos.stream()
+                .map(produto -> ProdutoResponse.builder()
+                        .id(produto.getId())
+                        .descricao(produto.getDescricao())
+                        .build())
+                .toList();
     }
 
     private ProdutoResponse construirDto(Produto produto) {

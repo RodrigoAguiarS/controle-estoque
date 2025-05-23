@@ -18,7 +18,6 @@ import java.util.List;
 public class VendaResponse {
     private Long id;
     private List<ItemVendaResponse> itens;
-    private BigDecimal valorVenda;
     private BigDecimal valorTotal;
     private FormaDePagamentoResponse formaDePagamento;
     private String observacao;

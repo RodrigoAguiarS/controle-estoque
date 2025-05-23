@@ -21,6 +21,7 @@ public interface IVenda {
             BigDecimal valorMaximo,
             LocalDateTime dataInicio,
             LocalDateTime dataFim,
+            Long formaDePagamentoId,
             Boolean ativo
     );
 
