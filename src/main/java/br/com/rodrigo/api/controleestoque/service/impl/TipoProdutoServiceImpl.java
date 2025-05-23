@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -70,10 +71,10 @@ public class TipoProdutoServiceImpl implements ITipoProduto {
     }
 
     @Override
-    public Page<TipoProdutoResponse> listarTodos(int page, int size, String sort, Long id, String nome,
+    public Page<TipoProdutoResponse> listarTodos(int page, int size, String sort, Long id, String nome, BigDecimal margemLucro,
                                                  String descricao) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "id"));
-        Page<TipoProduto> categorias = tipoProdutoRepository.findAll(id, nome, descricao, pageable);
+        Page<TipoProduto> categorias = tipoProdutoRepository.findAll(id, nome, margemLucro, descricao, pageable);
         return categorias.map(this::construirDto);
     }
 }

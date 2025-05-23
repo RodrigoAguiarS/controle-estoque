@@ -12,10 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemVendaForm {
-    @NotNull(message = "O ID do produto é obrigatório")
+    @NotNull(message = "O ID do produto Ã© obrigatÃ³rio")
     private Long produtoId;
 
-    @NotNull(message = "A quantidade é obrigatória")
+    @NotNull(message = "A quantidade Ã© obrigatÃ³ria")
     @Min(value = 1, message = "A quantidade deve ser maior que zero")
     private Integer quantidade;
 }

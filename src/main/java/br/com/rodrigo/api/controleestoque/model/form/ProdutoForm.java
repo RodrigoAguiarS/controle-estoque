@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,6 +26,8 @@ public class ProdutoForm {
     @NotNull(message = "O valor do fornecedor é obrigatório")
     @Positive(message = "O valor do fornecedor deve ser positivo")
     private BigDecimal valorFornecedor;
+
+    private List<String> arquivosUrl;
 
     @NotNull(message = "A quantidade em estoque é obrigatória")
     @PositiveOrZero(message = "A quantidade em estoque deve ser zero ou positiva")
