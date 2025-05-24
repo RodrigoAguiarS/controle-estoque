@@ -10,6 +10,6 @@ public interface IGraficos {
 
     List<ProdutoLucroResponse> buscarLucroPorProduto();
     List<TipoProdutoEstoqueResponse> buscarEstoquePorTipoProduto();
-    public List<MovimentacaoEstoque> buscarUltimasMovimentacoes(int limite);
+    List<MovimentacaoEstoque> buscarUltimasMovimentacoes(int limite);
 
 }

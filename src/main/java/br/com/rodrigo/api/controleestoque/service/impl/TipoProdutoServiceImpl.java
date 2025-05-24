@@ -1,6 +1,5 @@
 package br.com.rodrigo.api.controleestoque.service.impl;
 
-import br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.TipoProduto;
@@ -18,12 +17,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper.entidadeParaResponse;
+
 @Service
 @RequiredArgsConstructor
 public class TipoProdutoServiceImpl implements ITipoProduto {
 
     private final TipoProdutoRepository tipoProdutoRepository;
-    private final TipoProdutoMapper tipoProdutoMapper;
 
     @Override
     public TipoProdutoResponse criar(TipoProdutoForm tipoProdutoForm) {
@@ -52,7 +52,7 @@ public class TipoProdutoServiceImpl implements ITipoProduto {
     }
 
     private TipoProdutoResponse construirDto(TipoProduto tipoProduto) {
-        return tipoProdutoMapper.entidadeParaResponse(tipoProduto);
+        return entidadeParaResponse(tipoProduto);
     }
 
     @Override

@@ -2,39 +2,30 @@ package br.com.rodrigo.api.controleestoque.conversor;
 
 import br.com.rodrigo.api.controleestoque.model.Venda;
 import br.com.rodrigo.api.controleestoque.model.response.VendaResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class VendaMapper implements IMapper<Venda, VendaResponse> {
+public class VendaMapper {
 
-    private final ItemVendaMapper itemVendaMapper;
-    private final FormaDePagamentoMapper formaDePagamentoMapper;
-
-    @Override
-    public VendaResponse entidadeParaResponse(Venda venda) {
+    public static VendaResponse entidadeParaResponse(Venda venda) {
         return VendaResponse.builder()
                 .id(venda.getId())
                 .itens(venda.getItens().stream()
-                        .map(itemVendaMapper::entidadeParaResponse)
+                        .map(ItemVendaMapper::entidadeParaResponse)
                         .toList())
                 .valorTotal(venda.getValorTotal())
-                .formaDePagamento(formaDePagamentoMapper.entidadeParaResponse(venda.getFormaDePagamento()))
+                .formaDePagamento(FormaDePagamentoMapper.entidadeParaResponse(venda.getFormaDePagamento()))
                 .observacao(venda.getObservacao())
                 .criadoEm(venda.getCriadoEm())
                 .ativo(venda.getAtivo())
                 .build();
     }
 
-    @Override
-    public Venda responseParaEntidade(VendaResponse response) {
+    public static Venda responseParaEntidade(VendaResponse response) {
         return Venda.builder()
                 .id(response.getId())
                 .itens(response.getItens().stream()
-                        .map(itemVendaMapper::responseParaEntidade)
+                        .map(ItemVendaMapper::responseParaEntidade)
                         .toList())
-                .formaDePagamento(formaDePagamentoMapper.responseParaEntidade(response.getFormaDePagamento()))
+                .formaDePagamento(FormaDePagamentoMapper.responseParaEntidade(response.getFormaDePagamento()))
                 .valorTotal(response.getValorTotal())
                 .observacao(response.getObservacao())
                 .build();

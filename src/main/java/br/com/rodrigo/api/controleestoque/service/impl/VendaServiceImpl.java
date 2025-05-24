@@ -41,8 +41,6 @@ public class VendaServiceImpl implements IVenda {
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
     private final IFormaDePagamento formaDePagamentoService;
-    private final FormaDePagamentoMapper formaDePagamentoMapper;
-    private final VendaMapper vendaMapper;
     private final MovimentacaoEstoqueService movimentacaoService;
 
     @Override
@@ -63,7 +61,7 @@ public class VendaServiceImpl implements IVenda {
     public Page<VendaResponse> listarTodos(int page, int size, String sort, Long id, BigDecimal valorMinimo, BigDecimal valorMaximo, LocalDateTime dataInicio, LocalDateTime dataFim, Long formaDePagamentoId, Boolean ativo) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         Page<Venda> vendas = vendaRepository.findAll(id, valorMinimo, valorMaximo, dataInicio, dataFim, ativo, formaDePagamentoId, pageable);
-        return vendas.map(vendaMapper::entidadeParaResponse);
+        return vendas.map(VendaMapper::entidadeParaResponse);
     }
 
 
@@ -115,7 +113,7 @@ public class VendaServiceImpl implements IVenda {
                 .collect(Collectors.toList());
 
         venda.setItens(itens);
-        venda.setFormaDePagamento(formaDePagamentoMapper.responseParaEntidade(formaDePagamento));
+        venda.setFormaDePagamento(FormaDePagamentoMapper.responseParaEntidade(formaDePagamento));
 
         BigDecimal valorTotal = venda.getItens().stream()
                 .map(ItemVenda::getValorTotal)
@@ -149,6 +147,6 @@ public class VendaServiceImpl implements IVenda {
     }
 
     private VendaResponse construirDto(Venda venda) {
-        return vendaMapper.entidadeParaResponse(venda);
+        return VendaMapper.entidadeParaResponse(venda);
     }
 }

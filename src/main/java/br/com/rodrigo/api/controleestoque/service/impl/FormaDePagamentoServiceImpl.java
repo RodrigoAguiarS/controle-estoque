@@ -1,6 +1,5 @@
 package br.com.rodrigo.api.controleestoque.service.impl;
 
-import br.com.rodrigo.api.controleestoque.conversor.FormaDePagamentoMapper;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.FormaDePagamento;
@@ -18,12 +17,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static br.com.rodrigo.api.controleestoque.conversor.FormaDePagamentoMapper.entidadeParaResponse;
+
 @Service
 @RequiredArgsConstructor
 public class FormaDePagamentoServiceImpl implements IFormaDePagamento {
 
     private final FormaDePagamentoRepository formaDePagamentoRepository;
-    private final FormaDePagamentoMapper formaDePagamentoMapper;
 
     @Override
     public FormaDePagamentoResponse criar(Long id, FormaDePagamentoForm formaDePagamentoForm) {
@@ -68,6 +68,6 @@ public class FormaDePagamentoServiceImpl implements IFormaDePagamento {
     }
 
     private FormaDePagamentoResponse construirDto(FormaDePagamento formaDePagamento) {
-        return formaDePagamentoMapper.entidadeParaResponse(formaDePagamento);
+        return entidadeParaResponse(formaDePagamento);
     }
 }
