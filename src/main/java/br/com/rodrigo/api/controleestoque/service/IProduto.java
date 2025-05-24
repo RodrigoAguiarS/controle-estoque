@@ -5,7 +5,6 @@ import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 public interface IProduto {
@@ -14,5 +13,4 @@ public interface IProduto {
     Optional<ProdutoResponse> consultarPorId(Long id);
     Page<ProdutoResponse> listarTodos(int page, int size, String sort, Long id, String descricao,
                                       Long tipoProduto, BigDecimal valorFornecedor, Integer quantidadeEstoque);
-    List<ProdutoResponse> buscarPorIdOuDescricao(Long id, String descricao);
 }

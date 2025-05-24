@@ -68,16 +68,6 @@ public class VendaServiceImpl implements IVenda {
 
 
     @Override
-    public BigDecimal calcularLucroVenda(Long vendaId) {
-        return null;
-    }
-
-    @Override
-    public boolean validarEstoque(VendaForm vendaForm) {
-        return false;
-    }
-
-    @Override
     @Transactional
     public void cancelarVenda(Long id) {
         Venda venda = vendaRepository.findById(id)

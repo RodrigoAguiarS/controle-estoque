@@ -2,6 +2,7 @@ package br.com.rodrigo.api.controleestoque.rest;
 
 import br.com.rodrigo.api.controleestoque.model.form.ProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
+import br.com.rodrigo.api.controleestoque.service.IGraficos;
 import br.com.rodrigo.api.controleestoque.service.IProduto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class ProdutoController extends ControllerBase<ProdutoResponse> {
 
     private final IProduto produtoService;
+    private final IGraficos graficosService;
 
     @PostMapping
     public ResponseEntity<ProdutoResponse> criar(@RequestBody @Valid ProdutoForm produtoForm, UriComponentsBuilder uriBuilder) {

@@ -25,9 +25,5 @@ public interface IVenda {
             Boolean ativo
     );
 
-    BigDecimal calcularLucroVenda(Long idVenda);
-
-    boolean validarEstoque(VendaForm vendaForm);
-
     void cancelarVenda(Long idVenda);
 }
