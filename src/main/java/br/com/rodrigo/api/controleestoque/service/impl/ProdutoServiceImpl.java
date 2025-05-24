@@ -123,7 +123,7 @@ public class ProdutoServiceImpl implements IProduto {
         }
     }
 
-    public BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
+    private BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
         BigDecimal fatorMultiplicacao = tipoProduto.getMargemLucro()
                 .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP)
                 .add(BigDecimal.ONE);

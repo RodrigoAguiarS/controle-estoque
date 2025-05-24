@@ -18,7 +18,7 @@ public class VendaForm {
     @Valid
     private List<ItemVendaForm> itens;
 
-    private Long formaDePagamentoId;
+    private Long formaDePagamento;
 
     private String observacao;
 }

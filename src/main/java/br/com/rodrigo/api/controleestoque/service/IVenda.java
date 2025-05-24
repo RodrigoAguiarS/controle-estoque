@@ -21,12 +21,9 @@ public interface IVenda {
             BigDecimal valorMaximo,
             LocalDateTime dataInicio,
             LocalDateTime dataFim,
+            Long formaDePagamentoId,
             Boolean ativo
     );
-
-    BigDecimal calcularLucroVenda(Long idVenda);
-
-    boolean validarEstoque(VendaForm vendaForm);
 
     void cancelarVenda(Long idVenda);
 }

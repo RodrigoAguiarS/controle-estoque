@@ -60,23 +60,12 @@ public class VendaServiceImpl implements IVenda {
     }
 
     @Override
-    public Page<VendaResponse> listarTodos(int page, int size, String sort, Long id, BigDecimal valorMinimo,
-                                           BigDecimal valorMaximo, LocalDateTime dataInicio, LocalDateTime dataFim,
-                                           Boolean ativo) {
+    public Page<VendaResponse> listarTodos(int page, int size, String sort, Long id, BigDecimal valorMinimo, BigDecimal valorMaximo, LocalDateTime dataInicio, LocalDateTime dataFim, Long formaDePagamentoId, Boolean ativo) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-        Page<Venda> vendas = vendaRepository.findAll(id, valorMinimo, valorMaximo, dataInicio, dataFim, ativo, pageable);
+        Page<Venda> vendas = vendaRepository.findAll(id, valorMinimo, valorMaximo, dataInicio, dataFim, ativo, formaDePagamentoId, pageable);
         return vendas.map(vendaMapper::entidadeParaResponse);
     }
 
-    @Override
-    public BigDecimal calcularLucroVenda(Long vendaId) {
-        return null;
-    }
-
-    @Override
-    public boolean validarEstoque(VendaForm vendaForm) {
-        return false;
-    }
 
     @Override
     @Transactional
@@ -101,16 +90,16 @@ public class VendaServiceImpl implements IVenda {
 
     private Venda criarVenda(VendaForm vendaForm) {
         Set<Long> produtoIds = vendaForm.getItens().stream()
-                .map(ItemVendaForm::getProdutoId)
+                .map(item -> item.getProduto().getId())
                 .collect(Collectors.toSet());
 
         Map<Long, Produto> produtoMap = produtoRepository.findAllById(produtoIds).stream()
                 .collect(Collectors.toMap(Produto::getId, produto -> produto));
 
         FormaDePagamentoResponse formaDePagamento = formaDePagamentoService
-                .consultarPorId(vendaForm.getFormaDePagamentoId())
+                .consultarPorId(vendaForm.getFormaDePagamento())
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
-                        MensagensError.FORMA_PAGAMENTO_NAO_ENCONTRADA.getMessage(vendaForm.getFormaDePagamentoId())));
+                        MensagensError.FORMA_PAGAMENTO_NAO_ENCONTRADA.getMessage(vendaForm.getFormaDePagamento())));
 
         Venda venda = new Venda();
 
@@ -145,9 +134,9 @@ public class VendaServiceImpl implements IVenda {
     }
 
     private ItemVenda criarItemVenda(ItemVendaForm itemForm, Map<Long, Produto> produtoMap, Venda venda) {
-        Produto produto = Optional.ofNullable(produtoMap.get(itemForm.getProdutoId()))
+        Produto produto = Optional.ofNullable(produtoMap.get(itemForm.getProduto().getId()))
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
-                        MensagensError.PRODUTO_NAO_ENCONTRADO.getMessage(itemForm.getProdutoId())));
+                        MensagensError.PRODUTO_NAO_ENCONTRADO.getMessage(itemForm.getProduto().getId())));
 
         return ItemVenda.builder()
                 .venda(venda)

@@ -17,6 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProdutoForm {
+
+    private Long id;
+
     @NotBlank(message = "A descrição é obrigatória")
     private String descricao;
 

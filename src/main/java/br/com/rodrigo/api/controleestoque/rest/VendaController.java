@@ -45,13 +45,14 @@ public class VendaController extends ControllerBase<VendaResponse> {
             @RequestParam(required = false) BigDecimal valorMaximo,
             @RequestParam(required = false) String dataInicio,
             @RequestParam(required = false) String dataFim,
+            @RequestParam(required = false) Long formaDePagamentoId,
             @RequestParam(required = false) Boolean ativo){
 
         LocalDateTime inicio = DateConverterUtil.parse(dataInicio, true);
         LocalDateTime fim = DateConverterUtil.parse(dataFim, false);
 
         return responderListaDeItensPaginada(
-                vendaService.listarTodos(page, size, sort, id, valorMinimo, valorMaximo, inicio, fim, ativo));
+                vendaService.listarTodos(page, size, sort, id, valorMinimo, valorMaximo, inicio, fim, formaDePagamentoId, ativo));
     }
 
     @DeleteMapping("/cancelar/{idVenda}")
