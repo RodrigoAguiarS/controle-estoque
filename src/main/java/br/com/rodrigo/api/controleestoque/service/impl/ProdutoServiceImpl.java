@@ -1,7 +1,5 @@
 package br.com.rodrigo.api.controleestoque.service.impl;
 
-import br.com.rodrigo.api.controleestoque.conversor.ProdutoMapper;
-import br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.Produto;
@@ -27,6 +25,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
+import static br.com.rodrigo.api.controleestoque.conversor.ProdutoMapper.entidadeParaResponse;
+import static br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper.responseParaEntidade;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
 
 @Service
@@ -34,8 +34,6 @@ import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpt
 public class ProdutoServiceImpl implements IProduto {
 
     private final ProdutoRepository produtoRepository;
-    private final TipoProdutoMapper tipoProdutoMapper;
-    private final ProdutoMapper produtoMapper;
     private final ITipoProduto tipoProdutoService;
     private final S3StorageService s3StorageService;
     private final MovimentacaoEstoqueService movimentacaoService;
@@ -85,10 +83,10 @@ public class ProdutoServiceImpl implements IProduto {
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(produtoForm.getTipoProdutoId())));
 
         BigDecimal valorFornecedor = produtoForm.getValorFornecedor();
-        produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
+        produto.setTipoProduto(responseParaEntidade(tipoProduto));
         BigDecimal valorVenda = calcularValorVenda(valorFornecedor, produto.getTipoProduto());
 
-        produto.setTipoProduto(tipoProdutoMapper.responseParaEntidade(tipoProduto));
+        produto.setTipoProduto(responseParaEntidade(tipoProduto));
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
         produto.setArquivosUrl(produtoForm.getArquivosUrl());
         produto.setValorVenda(valorVenda);
@@ -133,6 +131,6 @@ public class ProdutoServiceImpl implements IProduto {
     }
 
     private ProdutoResponse construirDto(Produto produto) {
-        return produtoMapper.entidadeParaResponse(produto);
+        return entidadeParaResponse(produto);
     }
 }

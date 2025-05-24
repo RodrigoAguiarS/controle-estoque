@@ -2,21 +2,14 @@ package br.com.rodrigo.api.controleestoque.conversor;
 
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class ProdutoMapper implements IMapper<Produto, ProdutoResponse> {
+public class ProdutoMapper {
 
-    private final TipoProdutoMapper tipoProdutoMapper;
-
-    @Override
-    public ProdutoResponse entidadeParaResponse(Produto entidade) {
+    public static ProdutoResponse entidadeParaResponse(Produto entidade) {
         return ProdutoResponse.builder()
                 .id(entidade.getId())
                 .descricao(entidade.getDescricao())
-                .tipoProduto(tipoProdutoMapper.entidadeParaResponse(entidade.getTipoProduto()))
+                .tipoProduto(TipoProdutoMapper.entidadeParaResponse(entidade.getTipoProduto()))
                 .valorFornecedor(entidade.getValorFornecedor())
                 .valorVenda(entidade.getValorVenda())
                 .quantidadeEstoque(entidade.getQuantidadeEstoque())
@@ -26,14 +19,13 @@ public class ProdutoMapper implements IMapper<Produto, ProdutoResponse> {
                 .build();
     }
 
-    @Override
-    public Produto responseParaEntidade(ProdutoResponse response) {
+    public static Produto responseParaEntidade(ProdutoResponse response) {
         return Produto.builder()
                 .id(response.getId())
                 .descricao(response.getDescricao())
                 .valorFornecedor(response.getValorFornecedor())
                 .valorVenda(response.getValorVenda())
-                .tipoProduto(tipoProdutoMapper.responseParaEntidade(response.getTipoProduto()))
+                .tipoProduto(TipoProdutoMapper.responseParaEntidade(response.getTipoProduto()))
                 .arquivosUrl(response.getArquivosUrl())
                 .quantidadeEstoque(response.getQuantidadeEstoque())
                 .build();

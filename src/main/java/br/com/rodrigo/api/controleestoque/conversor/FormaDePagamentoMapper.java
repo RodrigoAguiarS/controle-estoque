@@ -2,13 +2,10 @@ package br.com.rodrigo.api.controleestoque.conversor;
 
 import br.com.rodrigo.api.controleestoque.model.FormaDePagamento;
 import br.com.rodrigo.api.controleestoque.model.response.FormaDePagamentoResponse;
-import org.springframework.stereotype.Component;
 
-@Component
-public class FormaDePagamentoMapper implements IMapper<FormaDePagamento, FormaDePagamentoResponse> {
+public class FormaDePagamentoMapper {
 
-    @Override
-    public FormaDePagamentoResponse entidadeParaResponse(FormaDePagamento entidade) {
+    public static FormaDePagamentoResponse entidadeParaResponse(FormaDePagamento entidade) {
         return FormaDePagamentoResponse.builder()
                 .id(entidade.getId())
                 .nome(entidade.getNome())
@@ -18,8 +15,7 @@ public class FormaDePagamentoMapper implements IMapper<FormaDePagamento, FormaDe
                 .build();
     }
 
-    @Override
-    public FormaDePagamento responseParaEntidade(FormaDePagamentoResponse response) {
+    public static FormaDePagamento responseParaEntidade(FormaDePagamentoResponse response) {
         return FormaDePagamento.builder()
                 .id(response.getId())
                 .nome(response.getNome())
