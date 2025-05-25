@@ -90,8 +90,7 @@ classDiagram
         <<enumeration>>
         VENDA
         CANCELAMENTO_VENDA
-        AJUSTE_ESTOQUE
-        DEVOLUCAO
+        CADASTRO_PRODUTO
     }
 
     Produto "1" -- "1" TipoProduto
