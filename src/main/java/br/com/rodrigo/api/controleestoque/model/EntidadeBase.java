@@ -1,9 +1,12 @@
 package br.com.rodrigo.api.controleestoque.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -35,7 +38,12 @@ public abstract class EntidadeBase implements Serializable {
     private LocalDateTime atualizadoEm;
 
     @Column(name = "ativo", nullable = false)
-    private Boolean ativo = true;
+    private Boolean ativo;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "unidade_id", nullable = false)
+    private Unidade unidade;
 
     public void desativar() {
         this.ativo = false;

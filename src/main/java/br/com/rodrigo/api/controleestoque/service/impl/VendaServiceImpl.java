@@ -8,6 +8,7 @@ import br.com.rodrigo.api.controleestoque.model.ItemVenda;
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
+import br.com.rodrigo.api.controleestoque.model.Unidade;
 import br.com.rodrigo.api.controleestoque.model.Venda;
 import br.com.rodrigo.api.controleestoque.model.form.ItemVendaForm;
 import br.com.rodrigo.api.controleestoque.model.form.VendaForm;
@@ -17,6 +18,10 @@ import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.repository.VendaRepository;
 import br.com.rodrigo.api.controleestoque.service.IFormaDePagamento;
 import br.com.rodrigo.api.controleestoque.service.IVenda;
+import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueService;
+import br.com.rodrigo.api.controleestoque.service.calculo.CalculoValorTotalComAcrescimoStrategy;
+import br.com.rodrigo.api.controleestoque.service.calculo.CalculoValorTotalStrategy;
+import br.com.rodrigo.api.controleestoque.service.factory.UnidadeUsuarioLogadoFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +31,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,13 @@ public class VendaServiceImpl implements IVenda {
     private final ProdutoRepository produtoRepository;
     private final IFormaDePagamento formaDePagamentoService;
     private final MovimentacaoEstoqueService movimentacaoService;
+    private final UnidadeUsuarioLogadoFactory unidadeFactory;
+    private final CalculoValorTotalStrategy calculoValorTotalStrategy;
+    private final CalculoValorTotalComAcrescimoStrategy calculoValorTotalComAcrescimoStrategy;
+
+    private Unidade getUnidade() {
+        return unidadeFactory.criarUnidade();
+    }
 
     @Override
     @Transactional
@@ -60,7 +71,7 @@ public class VendaServiceImpl implements IVenda {
     @Override
     public Page<VendaResponse> listarTodos(int page, int size, String sort, Long id, BigDecimal valorMinimo, BigDecimal valorMaximo, LocalDateTime dataInicio, LocalDateTime dataFim, Long formaDePagamentoId, Boolean ativo) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-        Page<Venda> vendas = vendaRepository.findAll(id, valorMinimo, valorMaximo, dataInicio, dataFim, ativo, formaDePagamentoId, pageable);
+        Page<Venda> vendas = vendaRepository.findAll(getUnidade().getId(), id, valorMinimo, valorMaximo, dataInicio, dataFim, ativo, formaDePagamentoId, pageable);
         return vendas.map(VendaMapper::entidadeParaResponse);
     }
 
@@ -100,6 +111,7 @@ public class VendaServiceImpl implements IVenda {
                         MensagensError.FORMA_PAGAMENTO_NAO_ENCONTRADA.getMessage(vendaForm.getFormaDePagamento())));
 
         Venda venda = new Venda();
+        venda.setUnidade(getUnidade());
 
         List<ItemVenda> itens = vendaForm.getItens().stream()
                 .map(itemForm -> criarItemVenda(itemForm, produtoMap, venda))
@@ -115,17 +127,11 @@ public class VendaServiceImpl implements IVenda {
         venda.setItens(itens);
         venda.setFormaDePagamento(FormaDePagamentoMapper.responseParaEntidade(formaDePagamento));
 
-        BigDecimal valorTotal = venda.getItens().stream()
-                .map(ItemVenda::getValorTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal acrescimo = venda.getFormaDePagamento().getPorcentagemAcrescimo()
-                .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP);
-        BigDecimal valorAcrescimo = valorTotal.multiply(acrescimo);
-        BigDecimal valorTotalComAcrescimo = valorTotal.add(valorAcrescimo)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal subTotal = calculoValorTotalStrategy.calcular(venda);
+        BigDecimal valorTotalComAcrescimo = calculoValorTotalComAcrescimoStrategy.calcular(venda);
 
         venda.setValorTotal(valorTotalComAcrescimo);
+        venda.setSubtotal(subTotal);
         venda.setObservacao(vendaForm.getObservacao());
 
         return venda;
@@ -139,6 +145,7 @@ public class VendaServiceImpl implements IVenda {
         return ItemVenda.builder()
                 .venda(venda)
                 .produto(produto)
+                .unidade(getUnidade())
                 .quantidade(itemForm.getQuantidade())
                 .valorUnitario(produto.getValorVenda())
                 .valorTotal(produto.getValorVenda()

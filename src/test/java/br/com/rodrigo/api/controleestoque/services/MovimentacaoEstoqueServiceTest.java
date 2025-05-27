@@ -6,10 +6,10 @@ import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
 import br.com.rodrigo.api.controleestoque.repository.MovimentacaoEstoqueRepository;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
-import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueStrategy;
-import br.com.rodrigo.api.controleestoque.service.impl.CadastroProdutoStrategy;
-import br.com.rodrigo.api.controleestoque.service.impl.MovimentacaoEstoqueService;
-import br.com.rodrigo.api.controleestoque.service.impl.SaidaVendaStrategy;
+import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueService;
+import br.com.rodrigo.api.controleestoque.service.strategy.CadastroProdutoStrategy;
+import br.com.rodrigo.api.controleestoque.service.strategy.MovimentacaoEstoqueStrategy;
+import br.com.rodrigo.api.controleestoque.service.strategy.SaidaVendaStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -55,7 +55,7 @@ class MovimentacaoEstoqueServiceTest {
                 .valorFornecedor(new BigDecimal("100.00"))
                 .build();
 
-        estrategiaEntrada = new CadastroProdutoStrategy(movimentacaoEstoqueRepository, produtoRepository);
+        estrategiaEntrada = new CadastroProdutoStrategy(movimentacaoEstoqueRepository);
 
         estrategiaSaida = new SaidaVendaStrategy(movimentacaoEstoqueRepository, produtoRepository);
 

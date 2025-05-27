@@ -16,7 +16,8 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     @Query("""
     SELECT v
     FROM Venda v
-    WHERE v.id = COALESCE(:id, v.id)
+    WHERE v.unidade.id = :unidadeId
+      AND v.id = COALESCE(:id, v.id)
       AND v.valorTotal >= COALESCE(:valorMinimo, v.valorTotal)
       AND v.valorTotal <= COALESCE(:valorMaximo, v.valorTotal)
       AND v.criadoEm >= COALESCE(:dataInicio, v.criadoEm)
@@ -26,6 +27,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     ORDER BY v.criadoEm DESC, v.id
 """)
     Page<Venda> findAll(
+            @Param("unidadeId") Long unidadeId,
             @Param("id") Long id,
             @Param("valorMinimo") BigDecimal valorMinimo,
             @Param("valorMaximo") BigDecimal valorMaximo,

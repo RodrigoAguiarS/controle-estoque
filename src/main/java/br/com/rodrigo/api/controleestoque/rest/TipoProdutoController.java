@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -59,9 +58,8 @@ public class TipoProdutoController extends ControllerBase<TipoProdutoResponse> {
                                                             @RequestParam(required = false) String sort,
                                                             @RequestParam(required = false) Long id,
                                                             @RequestParam(required = false) String nome,
-                                                            @RequestParam(required = false) BigDecimal margemLucro,
                                                             @RequestParam(required = false) String descricao) {
-        Page<TipoProdutoResponse> tipoProdutoResponsePage = tipoProdutoService.listarTodos(page, size, sort, id, nome, margemLucro, descricao);
+        Page<TipoProdutoResponse> tipoProdutoResponsePage = tipoProdutoService.listarTodos(page, size, sort, id, nome, descricao);
         return responderListaDeItensPaginada(tipoProdutoResponsePage);
     }
 }

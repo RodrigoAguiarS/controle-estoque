@@ -3,10 +3,12 @@ package br.com.rodrigo.api.controleestoque.service.impl;
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
 import br.com.rodrigo.api.controleestoque.model.TipoProduto;
+import br.com.rodrigo.api.controleestoque.model.Unidade;
 import br.com.rodrigo.api.controleestoque.model.form.TipoProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import br.com.rodrigo.api.controleestoque.repository.TipoProdutoRepository;
 import br.com.rodrigo.api.controleestoque.service.ITipoProduto;
+import br.com.rodrigo.api.controleestoque.service.factory.UnidadeUsuarioLogadoFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import static br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper.entidadeParaResponse;
@@ -24,6 +25,11 @@ import static br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper.ent
 public class TipoProdutoServiceImpl implements ITipoProduto {
 
     private final TipoProdutoRepository tipoProdutoRepository;
+    private final UnidadeUsuarioLogadoFactory unidadeFactory;
+
+    private Unidade getUnidade() {
+        return unidadeFactory.criarUnidade();
+    }
 
     @Override
     public TipoProdutoResponse criar(TipoProdutoForm tipoProdutoForm) {
@@ -43,9 +49,8 @@ public class TipoProdutoServiceImpl implements ITipoProduto {
         TipoProduto tipoProduto = id == null ? new TipoProduto() : tipoProdutoRepository.findById(id)
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(id)));
-
         tipoProduto.setNome(tipoProdutoForm.getNome());
-        tipoProduto.setMargemLucro(tipoProdutoForm.getMargemLucro());
+        tipoProduto.setUnidade(getUnidade());
         tipoProduto.setDescricao(tipoProdutoForm.getDescricao());
 
         return tipoProduto;
@@ -71,10 +76,9 @@ public class TipoProdutoServiceImpl implements ITipoProduto {
     }
 
     @Override
-    public Page<TipoProdutoResponse> listarTodos(int page, int size, String sort, Long id, String nome, BigDecimal margemLucro,
-                                                 String descricao) {
+    public Page<TipoProdutoResponse> listarTodos(int page, int size, String sort, Long id, String nome, String descricao) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "id"));
-        Page<TipoProduto> categorias = tipoProdutoRepository.findAll(id, nome, margemLucro, descricao, pageable);
-        return categorias.map(this::construirDto);
+        Page<TipoProduto> tipos = tipoProdutoRepository.findAllByUnidade(getUnidade().getId(), id, nome, descricao, pageable);
+        return tipos.map(this::construirDto);
     }
 }

@@ -1,4 +1,4 @@
-package br.com.rodrigo.api.controleestoque.service;
+package br.com.rodrigo.api.controleestoque.service.strategy;
 
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;

@@ -17,6 +17,7 @@ public class FormaDePagamentoResponse {
     private Long id;
     private String nome;
     private String descricao;
+    private UnidadeResponse unidade;
     private BigDecimal porcentagemAcrescimo;
     private Boolean ativo;
 }

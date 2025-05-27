@@ -5,14 +5,17 @@ import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
-import br.com.rodrigo.api.controleestoque.model.TipoProduto;
+import br.com.rodrigo.api.controleestoque.model.Unidade;
 import br.com.rodrigo.api.controleestoque.model.form.ProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.service.IProduto;
 import br.com.rodrigo.api.controleestoque.service.ITipoProduto;
+import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueService;
 import br.com.rodrigo.api.controleestoque.service.S3StorageService;
+import br.com.rodrigo.api.controleestoque.service.factory.UnidadeFactory;
+import br.com.rodrigo.api.controleestoque.service.template.CalculoValorVendaTemplate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,11 +40,18 @@ public class ProdutoServiceImpl implements IProduto {
     private final ITipoProduto tipoProdutoService;
     private final S3StorageService s3StorageService;
     private final MovimentacaoEstoqueService movimentacaoService;
+    private final UnidadeFactory unidadeFactory;
+    private final CalculoValorVendaTemplate calculoValorVenda;
+
+    private Unidade getUnidade() {
+        return unidadeFactory.criarUnidade();
+    }
 
     @Override
     @Transactional
     public ProdutoResponse criar(Long idProduto, ProdutoForm produtoForm) {
         Produto produto = criaProduto(produtoForm, idProduto);
+        produto = produtoRepository.save(produto);
         return construirDto(produto);
     }
 
@@ -68,7 +78,7 @@ public class ProdutoServiceImpl implements IProduto {
     @Override
     public Page<ProdutoResponse> listarTodos(int page, int size, String sort, Long id, String descricao, Long tipoProdutoId, BigDecimal valorFornecedor, Integer quantidadeEstoque) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "id"));
-        Page<Produto> produtos = produtoRepository.findAll(id, descricao, valorFornecedor, quantidadeEstoque, tipoProdutoId, pageable);
+        Page<Produto> produtos = produtoRepository.findAll(id, descricao, valorFornecedor, quantidadeEstoque, tipoProdutoId, getUnidade().getId(), pageable);
         return produtos.map(this::construirDto);
     }
 
@@ -82,11 +92,13 @@ public class ProdutoServiceImpl implements IProduto {
                 .orElseThrow(() -> new ObjetoNaoEncontradoException(
                         MensagensError.TIPO_PRODUTO_NAO_ENCONTRADO.getMessage(produtoForm.getTipoProdutoId())));
 
+
         BigDecimal valorFornecedor = produtoForm.getValorFornecedor();
         produto.setTipoProduto(responseParaEntidade(tipoProduto));
-        BigDecimal valorVenda = calcularValorVenda(valorFornecedor, produto.getTipoProduto());
+        BigDecimal valorVenda = calcularValorVenda(valorFornecedor);
 
         produto.setTipoProduto(responseParaEntidade(tipoProduto));
+        produto.setUnidade(getUnidade());
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
         produto.setArquivosUrl(produtoForm.getArquivosUrl());
         produto.setValorVenda(valorVenda);
@@ -121,8 +133,8 @@ public class ProdutoServiceImpl implements IProduto {
         }
     }
 
-    private BigDecimal calcularValorVenda(BigDecimal valorFornecedor, TipoProduto tipoProduto) {
-        BigDecimal fatorMultiplicacao = tipoProduto.getMargemLucro()
+    private BigDecimal calcularValorVenda(BigDecimal valorFornecedor) {
+        BigDecimal fatorMultiplicacao = calculoValorVenda.calcularValorVenda(valorFornecedor)
                 .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP)
                 .add(BigDecimal.ONE);
 

@@ -18,5 +18,6 @@ public class ItemVendaResponse {
     private ProdutoResponse produto;
     private Integer quantidade;
     private BigDecimal valorUnitario;
+    private UnidadeResponse unidade;
     private BigDecimal valorTotal;
 }

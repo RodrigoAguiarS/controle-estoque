@@ -1,9 +1,9 @@
-package br.com.rodrigo.api.controleestoque.service.impl;
+package br.com.rodrigo.api.controleestoque.service;
 
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
-import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueStrategy;
+import br.com.rodrigo.api.controleestoque.service.strategy.MovimentacaoEstoqueStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

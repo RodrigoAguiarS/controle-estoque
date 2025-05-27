@@ -13,11 +13,13 @@ public interface FormaDePagamentoRepository extends JpaRepository<FormaDePagamen
 
     @Query("SELECT t FROM FormaDePagamento t " +
             "WHERE t.ativo = true " +
+            "AND t.unidade.id = :unidadeId " +
             "AND (:id IS NULL OR t.id = :id) " +
             "AND (:nome IS NULL OR LOWER(t.nome) LIKE %:nome%) " +
             "AND (:porcentagemAcrescimo IS NULL OR t.porcentagemAcrescimo = :porcentagemAcrescimo) " +
             "AND (:descricao IS NULL OR LOWER(t.descricao) LIKE %:descricao%) ")
-    Page<FormaDePagamento> findAll(@Param("id") Long id,
+    Page<FormaDePagamento> findAll(@Param("unidadeId") Long unidadeId,
+                              @Param("id") Long id,
                               @Param("nome") String nome,
                               @Param("porcentagemAcrescimo") BigDecimal porcentagemAcrescimo,
                               @Param("descricao") String descricao,

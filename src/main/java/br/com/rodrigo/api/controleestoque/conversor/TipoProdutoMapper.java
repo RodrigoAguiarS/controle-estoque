@@ -9,8 +9,8 @@ public class TipoProdutoMapper  {
         return TipoProdutoResponse.builder()
                 .id(entidade.getId())
                 .nome(entidade.getNome())
-                .margemLucro(entidade.getMargemLucro())
                 .descricao(entidade.getDescricao())
+                .unidade(UnidadeMapper.entidadeParaResponse(entidade.getUnidade()))
                 .ativo(entidade.getAtivo())
                 .build();
     }
@@ -19,8 +19,8 @@ public class TipoProdutoMapper  {
         return TipoProduto.builder()
                 .id(response.getId())
                 .nome(response.getNome())
-                .margemLucro(response.getMargemLucro())
                 .descricao(response.getDescricao())
+                .unidade(UnidadeMapper.responseParaEntidadeSemEmpresa(response.getUnidade()))
                 .ativo(response.getAtivo())
                 .build();
     }

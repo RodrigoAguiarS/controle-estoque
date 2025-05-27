@@ -10,6 +10,7 @@ public class ItemVendaMapper {
                 .id(itemVenda.getId())
                 .produto(ProdutoMapper.entidadeParaResponse(itemVenda.getProduto()))
                 .quantidade(itemVenda.getQuantidade())
+                .unidade(UnidadeMapper.entidadeParaResponseComEmpresa(itemVenda.getUnidade()))
                 .valorUnitario(itemVenda.getValorUnitario())
                 .valorTotal(itemVenda.getValorTotal())
                 .build();
@@ -19,6 +20,8 @@ public class ItemVendaMapper {
         return ItemVenda.builder()
                 .id(response.getId())
                 .quantidade(response.getQuantidade())
+                .unidade(UnidadeMapper.responseParaEntidade(response.getUnidade()))
+                .produto(ProdutoMapper.responseParaEntidade(response.getProduto()))
                 .valorUnitario(response.getValorUnitario())
                 .valorTotal(response.getValorTotal())
                 .build();

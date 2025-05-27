@@ -1,9 +1,6 @@
-package br.com.rodrigo.api.controleestoque.config;
+package br.com.rodrigo.api.controleestoque.service.strategy;
 
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
-import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueStrategy;
-import br.com.rodrigo.api.controleestoque.service.impl.CadastroProdutoStrategy;
-import br.com.rodrigo.api.controleestoque.service.impl.SaidaVendaStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

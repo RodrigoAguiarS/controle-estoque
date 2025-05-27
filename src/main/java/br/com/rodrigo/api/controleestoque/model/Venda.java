@@ -31,6 +31,9 @@ public class Venda extends EntidadeBase {
     @Column(name = "valor_total")
     private BigDecimal valorTotal;
 
+    @Column(name = "subtotal")
+    private BigDecimal subtotal;
+
     @ManyToOne
     @JoinColumn(name = "forma_pagamento_id")
     private FormaDePagamento formaDePagamento;

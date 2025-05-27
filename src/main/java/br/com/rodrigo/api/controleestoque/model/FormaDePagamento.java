@@ -1,4 +1,5 @@
 package br.com.rodrigo.api.controleestoque.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;

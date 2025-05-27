@@ -12,8 +12,10 @@ public class VendaMapper {
                         .map(ItemVendaMapper::entidadeParaResponse)
                         .toList())
                 .valorTotal(venda.getValorTotal())
+                .subtotal(venda.getSubtotal())
                 .formaDePagamento(FormaDePagamentoMapper.entidadeParaResponse(venda.getFormaDePagamento()))
                 .observacao(venda.getObservacao())
+                .unidade(UnidadeMapper.entidadeParaResponse(venda.getUnidade()))
                 .criadoEm(venda.getCriadoEm())
                 .ativo(venda.getAtivo())
                 .build();
@@ -27,6 +29,8 @@ public class VendaMapper {
                         .toList())
                 .formaDePagamento(FormaDePagamentoMapper.responseParaEntidade(response.getFormaDePagamento()))
                 .valorTotal(response.getValorTotal())
+                .subtotal(response.getSubtotal())
+                .unidade(UnidadeMapper.responseParaEntidade(response.getUnidade()))
                 .observacao(response.getObservacao())
                 .build();
     }

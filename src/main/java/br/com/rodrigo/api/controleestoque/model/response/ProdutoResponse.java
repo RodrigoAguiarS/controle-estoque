@@ -22,6 +22,7 @@ public class ProdutoResponse {
     private BigDecimal valorFornecedor;
     private BigDecimal valorVenda;
     private Integer quantidadeEstoque;
+    private UnidadeResponse unidade;
     private List<String> arquivosUrl;
     private LocalDateTime dataCriacao;
     private Boolean ativo;

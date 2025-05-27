@@ -18,6 +18,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
             "JOIN p.tipoProduto tp " +
             "WHERE (:id IS NULL OR p.id = :id) " +
             "AND p.ativo = true " +
+            "AND p.unidade.id = :unidadeId " +
             "AND (:descricao IS NULL OR LOWER(p.descricao) LIKE %:descricao%) " +
             "AND (:valorFornecedor IS NULL OR p.valorFornecedor = :valorFornecedor) " +
             "AND (:quantidadeEstoque IS NULL OR p.quantidadeEstoque = :quantidadeEstoque) " +
@@ -28,6 +29,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
                           @Param("valorFornecedor") BigDecimal valorFornecedor,
                           @Param("quantidadeEstoque") Integer quantidadeEstoque,
                           @Param("tipoProdutoId") Long tipoProdutoId,
+                          @Param("unidadeId") Long unidadeId,
                           Pageable pageable);
 
     @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.ProdutoLucroResponse(" +
@@ -37,8 +39,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
             ") " +
             "FROM MovimentacaoEstoque me " +
             "LEFT JOIN me.produto p " +
+            "WHERE me.unidade.id = :unidadeId " +
             "GROUP BY p.descricao")
-    List<ProdutoLucroResponse> buscarLucroPorProduto();
+    List<ProdutoLucroResponse> buscarLucroPorProduto(@Param("unidadeId") Long unidadeId);
 
     @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.TipoProdutoEstoqueResponse(" +
             "   tp.nome, " +
@@ -48,7 +51,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
             "FROM MovimentacaoEstoque me " +
             "JOIN me.produto.tipoProduto tp " +
             "LEFT JOIN me.produto p " +
+            "WHERE me.unidade.id = :unidadeId " +
             "GROUP BY tp.nome")
-    List<TipoProdutoEstoqueResponse> buscarEstoquePorTipoProduto();
+    List<TipoProdutoEstoqueResponse> buscarEstoquePorTipoProduto(@Param("unidadeId") Long unidadeId);
 
 }
