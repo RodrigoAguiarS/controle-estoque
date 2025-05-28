@@ -60,9 +60,9 @@ public class UsuarioController extends ControllerBase<UsuarioResponse> {
                                                                  @RequestParam(required = false) String sort,
                                                                  @RequestParam(required = false) String nome,
                                                                  @RequestParam(required = false) String email,
-                                                                 @RequestParam(required = false) Long idPerfil,
-                                                                 @RequestParam(required = false) Long idUnidade) {
-        Page<UsuarioResponse> tipoProdutoResponsePage = usuarioService.listarTodos(page, size, sort, nome, email, idPerfil, idUnidade);
+                                                                 @RequestParam(required = false) Long perfil,
+                                                                 @RequestParam(required = false) Long unidade) {
+        Page<UsuarioResponse> tipoProdutoResponsePage = usuarioService.listarTodos(page, size, sort, nome, email, perfil, unidade);
         return responderListaDeItensPaginada(tipoProdutoResponsePage);
     }
 

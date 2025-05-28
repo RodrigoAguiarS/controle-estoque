@@ -30,6 +30,9 @@ public class Caixa extends EntidadeBase {
     @OneToMany(mappedBy = "caixa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovimentacaoCaixa> movimentacoes;
 
+    @OneToMany(mappedBy = "caixa", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Venda> vendas;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

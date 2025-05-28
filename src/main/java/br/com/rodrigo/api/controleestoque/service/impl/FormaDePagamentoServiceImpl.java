@@ -7,7 +7,6 @@ import br.com.rodrigo.api.controleestoque.model.form.FormaDePagamentoForm;
 import br.com.rodrigo.api.controleestoque.model.response.FormaDePagamentoResponse;
 import br.com.rodrigo.api.controleestoque.repository.FormaDePagamentoRepository;
 import br.com.rodrigo.api.controleestoque.service.IFormaDePagamento;
-import br.com.rodrigo.api.controleestoque.service.factory.UnidadeUsuarioLogadoFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,13 +18,13 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static br.com.rodrigo.api.controleestoque.conversor.FormaDePagamentoMapper.entidadeParaResponse;
+import static br.com.rodrigo.api.controleestoque.service.singleton.UsuarioContext.getUsuarioLogado;
 
 @Service
 @RequiredArgsConstructor
 public class FormaDePagamentoServiceImpl implements IFormaDePagamento {
 
     private final FormaDePagamentoRepository formaDePagamentoRepository;
-    private final UnidadeUsuarioLogadoFactory unidadeUsuarioLogadoFactory;
 
     @Override
     public FormaDePagamentoResponse criar(Long id, FormaDePagamentoForm formaDePagamentoForm) {
@@ -52,8 +51,7 @@ public class FormaDePagamentoServiceImpl implements IFormaDePagamento {
     public Page<FormaDePagamentoResponse> listarTodos(int page, int size, String sort, Long id, String nome,
                                                       String descricao, BigDecimal porcentagemAcrescimo) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "id"));
-        Long unidadeId = unidadeUsuarioLogadoFactory.criarUnidade().getId();
-        Page<FormaDePagamento> formasDePagamento = formaDePagamentoRepository.findAll(unidadeId, id, nome, porcentagemAcrescimo,
+        Page<FormaDePagamento> formasDePagamento = formaDePagamentoRepository.findAll(getUsuarioLogado().getUnidade().getId(), id, nome, porcentagemAcrescimo,
                 descricao, pageable);
         return formasDePagamento.map(this::construirDto);
     }
@@ -67,7 +65,7 @@ public class FormaDePagamentoServiceImpl implements IFormaDePagamento {
         formaDePagamento.setNome(formaDePagamentoForm.getNome());
         formaDePagamento.setDescricao(formaDePagamentoForm.getDescricao());
         formaDePagamento.setPorcentagemAcrescimo(formaDePagamentoForm.getPorcentagemAcrescimo());
-        formaDePagamento.setUnidade(unidadeUsuarioLogadoFactory.criarUnidade());
+        formaDePagamento.setUnidade(getUsuarioLogado().getUnidade());
         return formaDePagamento;
     }
 

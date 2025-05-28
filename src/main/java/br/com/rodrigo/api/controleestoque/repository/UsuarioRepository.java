@@ -27,12 +27,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             "JOIN u.perfis pf " +
             "WHERE (:nome IS NULL OR LOWER(p.nome) LIKE %:nome%) " +
             "AND (:email IS NULL OR LOWER(u.email) LIKE %:email%) " +
-            "AND (:idUnidade IS NULL OR u.unidade.id = :idUnidade) " +
-            "AND (:perfilId IS NULL OR pf.id = :perfilId)")
+            "AND (:unidade IS NULL OR u.unidade.id = :unidade) " +
+            "AND (:perfil IS NULL OR pf.id = :perfil)")
     Page<Usuario> findAll(@Param("email") String email,
                           @Param("nome") String nome,
-                          @Param("idUnidade") Long idUnidade,
-                          @Param("perfilId") Long perfilId,
+                          @Param("unidade") Long unidade,
+                          @Param("perfil") Long perfil,
                           Pageable pageable);
 
     @Cacheable("usuarios")

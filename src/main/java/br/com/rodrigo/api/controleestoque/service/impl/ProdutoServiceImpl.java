@@ -5,16 +5,14 @@ import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException
 import br.com.rodrigo.api.controleestoque.model.Produto;
 import br.com.rodrigo.api.controleestoque.model.TipoMovimentacao;
 import br.com.rodrigo.api.controleestoque.model.TipoOperacao;
-import br.com.rodrigo.api.controleestoque.model.Unidade;
 import br.com.rodrigo.api.controleestoque.model.form.ProdutoForm;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoResponse;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoResponse;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.service.IProduto;
 import br.com.rodrigo.api.controleestoque.service.ITipoProduto;
-import br.com.rodrigo.api.controleestoque.service.MovimentacaoEstoqueService;
 import br.com.rodrigo.api.controleestoque.service.S3StorageService;
-import br.com.rodrigo.api.controleestoque.service.factory.UnidadeFactory;
+import br.com.rodrigo.api.controleestoque.service.strategy.MovimentacaoEstoqueService;
 import br.com.rodrigo.api.controleestoque.service.template.CalculoValorVendaTemplate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,7 @@ import java.util.Optional;
 
 import static br.com.rodrigo.api.controleestoque.conversor.ProdutoMapper.entidadeParaResponse;
 import static br.com.rodrigo.api.controleestoque.conversor.TipoProdutoMapper.responseParaEntidade;
+import static br.com.rodrigo.api.controleestoque.service.singleton.UsuarioContext.getUsuarioLogado;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
 
 @Service
@@ -40,12 +39,8 @@ public class ProdutoServiceImpl implements IProduto {
     private final ITipoProduto tipoProdutoService;
     private final S3StorageService s3StorageService;
     private final MovimentacaoEstoqueService movimentacaoService;
-    private final UnidadeFactory unidadeFactory;
     private final CalculoValorVendaTemplate calculoValorVenda;
 
-    private Unidade getUnidade() {
-        return unidadeFactory.criarUnidade();
-    }
 
     @Override
     @Transactional
@@ -78,7 +73,7 @@ public class ProdutoServiceImpl implements IProduto {
     @Override
     public Page<ProdutoResponse> listarTodos(int page, int size, String sort, Long id, String descricao, Long tipoProdutoId, BigDecimal valorFornecedor, Integer quantidadeEstoque) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "id"));
-        Page<Produto> produtos = produtoRepository.findAll(id, descricao, valorFornecedor, quantidadeEstoque, tipoProdutoId, getUnidade().getId(), pageable);
+        Page<Produto> produtos = produtoRepository.findAll(id, descricao, valorFornecedor, quantidadeEstoque, tipoProdutoId, getUsuarioLogado().getUnidade().getId(), pageable);
         return produtos.map(this::construirDto);
     }
 
@@ -98,7 +93,7 @@ public class ProdutoServiceImpl implements IProduto {
         BigDecimal valorVenda = calcularValorVenda(valorFornecedor);
 
         produto.setTipoProduto(responseParaEntidade(tipoProduto));
-        produto.setUnidade(getUnidade());
+        produto.setUnidade(getUsuarioLogado().getUnidade());
         produto.setValorFornecedor(produtoForm.getValorFornecedor());
         produto.setArquivosUrl(produtoForm.getArquivosUrl());
         produto.setValorVenda(valorVenda);

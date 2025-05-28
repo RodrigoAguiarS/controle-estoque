@@ -3,7 +3,9 @@ package br.com.rodrigo.api.controleestoque.auth;
 
 import br.com.rodrigo.api.controleestoque.exception.MensagensError;
 import br.com.rodrigo.api.controleestoque.exception.ObjetoNaoEncontradoException;
+import br.com.rodrigo.api.controleestoque.model.Usuario;
 import br.com.rodrigo.api.controleestoque.repository.UsuarioRepository;
+import br.com.rodrigo.api.controleestoque.service.singleton.UsuarioContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +22,15 @@ public class AplicationConfiguration {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmailIgnoreCase(username)
-                .orElseThrow(() -> new ObjetoNaoEncontradoException(
-                        MensagensError.USUARIO_NAO_ENCONTRADO_POR_LOGIN.getMessage(username)));
+        return username -> {
+            Usuario usuario = userRepository.findByEmailIgnoreCase(username)
+                    .orElseThrow(() -> new ObjetoNaoEncontradoException(
+                            MensagensError.USUARIO_NAO_ENCONTRADO_POR_LOGIN.getMessage(username)));
+
+            UsuarioContext.setUsuarioLogado(usuario);
+
+            return usuario;
+        };
     }
 
     @Bean

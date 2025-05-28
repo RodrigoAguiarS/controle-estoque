@@ -53,9 +53,9 @@ public class UsuarioServiceImpl implements IUsuario {
     }
 
     @Override
-    public Page<UsuarioResponse> listarTodos(int page, int size, String sort, String nome, String email, Long idPerfil, Long idUnidade) {
+    public Page<UsuarioResponse> listarTodos(int page, int size, String sort, String nome, String email, Long perfil, Long unidade) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort != null ? sort : "p.nome"));
-        Page<Usuario> usuarios = usuarioRepository.findAll(email, nome , idUnidade, idPerfil , pageable);
+        Page<Usuario> usuarios = usuarioRepository.findAll(email, nome , unidade, perfil , pageable);
         return usuarios.map(this::construirDto);
     }
 

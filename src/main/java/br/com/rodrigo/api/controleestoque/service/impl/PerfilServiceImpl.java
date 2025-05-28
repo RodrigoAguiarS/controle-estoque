@@ -24,8 +24,8 @@ public class PerfilServiceImpl implements IPerfil {
     private final PerfilRepository perfilRepository;
 
     @Override
-    public PerfilResponse criar(Long id, PerfilForm perfilForm) {
-        Perfil perfil = criarEntidade(perfilForm, null);
+    public PerfilResponse criar(Long idPerfil, PerfilForm perfilForm) {
+        Perfil perfil = criarEntidade(perfilForm, idPerfil);
         perfil = perfilRepository.save(perfil);
         return construirDto(perfil);
     }
@@ -51,12 +51,13 @@ public class PerfilServiceImpl implements IPerfil {
         return perfis.map(this::construirDto);
     }
 
-    private Perfil criarEntidade(PerfilForm perfilForm, Long id) {
-        Perfil perfil = id == null ? new Perfil() : perfilRepository.findById(id)
-                .orElseThrow(() -> new ObjetoNaoEncontradoException(MensagensError.PERFIL_NAO_ENCONTRADO.getMessage(id)));
+    private Perfil criarEntidade(PerfilForm perfilForm, Long idPerfil) {
+        Perfil perfil = idPerfil == null ? new Perfil() : perfilRepository.findById(idPerfil)
+                .orElseThrow(() -> new ObjetoNaoEncontradoException(MensagensError.PERFIL_NAO_ENCONTRADO.getMessage(idPerfil)));
 
         perfil.setNome(perfilForm.getNome());
         perfil.setDescricao(perfilForm.getDescricao());
+        perfil.setAtivo(true);
         return perfil;
     }
 

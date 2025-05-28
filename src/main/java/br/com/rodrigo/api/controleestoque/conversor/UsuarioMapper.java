@@ -30,6 +30,7 @@ public class UsuarioMapper {
         }
 
         return Usuario.builder()
+                .id(response.getId())
                 .email(response.getEmail())
                 .pessoa(PessoaMapper.responseParaEntidade(response.getPessoa()))
                 .unidade(UnidadeMapper.responseParaEntidade(response.getUnidade()))
