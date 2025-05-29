@@ -1,6 +1,8 @@
 package br.com.rodrigo.api.controleestoque.repository;
 
 import br.com.rodrigo.api.controleestoque.model.Venda;
+import br.com.rodrigo.api.controleestoque.model.response.VendasPorFormaPagamentoResponse;
+import br.com.rodrigo.api.controleestoque.model.response.VendasPorUnidadeResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public interface VendaRepository extends JpaRepository<Venda, Long> {
@@ -37,5 +40,23 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             @Param("formaDePagamentoId") Long formaDePagamentoId,
             Pageable pageable
     );
+
+    @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.VendasPorUnidadeResponse(" +
+            "u.nome, COUNT(v.id), SUM(v.valorTotal)) " +
+            "FROM Venda v JOIN v.unidade u " +
+            "WHERE v.ativo = true " +
+            "GROUP BY u.nome " +
+            "ORDER BY SUM(v.valorTotal) DESC")
+    List<VendasPorUnidadeResponse> buscarVendasPorUnidade();
+
+
+
+    @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.VendasPorFormaPagamentoResponse(" +
+            "fdp.nome, COUNT(v.id), SUM(v.valorTotal)) " +
+            "FROM Venda v JOIN v.formaDePagamento fdp " +
+            "WHERE v.ativo = true AND v.unidade.id = :unidadeId " +
+            "GROUP BY fdp.nome " +
+            "ORDER BY COUNT(v.id) DESC")
+    List<VendasPorFormaPagamentoResponse> buscarVendasPorFormaPagamento(@Param("unidadeId") Long unidadeId);
 
 }

@@ -15,6 +15,7 @@ public enum MensagensError {
     FORMA_PAGAMENTO_NAO_ENCONTRADA("Forma de pagamento não encontrada para o id %s"),
     CAIXA_NAO_ENCONTRADO("Caixa não encontrado para o id %s"),
     CAIXA_NAO_ENCONTRADO_POR_USUARIO("Caixa não encontrado para o usuário com id %s"),
+    VENDA_NAO_REALIZADA_NAO_EXISTE_CAIXA_ABERTO("Venda não realizada, não existe caixa aberto para o usuário com id %s"),
     PERFIL_EM_USO("Perfil não pode ser excluído, pois está em uso por um usuário com id %s"),
     USUARIO_ADMINISTRADOR_NAO_PODE_SER_DELETADO("Usuário administrador não pode ser deletado, id %s"),
     CAIXA_SALDO_INSUFICIENTE("Saldo insuficiente no caixa com id %s. Saldo atual: %s, valor solicitado: %s"),

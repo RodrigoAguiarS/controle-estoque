@@ -34,8 +34,10 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.ProdutoLucroResponse(" +
             "   p.descricao, " +
-            "   SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END), " +
-            "   SUM(CASE WHEN me.tipo = 'SAIDA' THEN (p.valorVenda - p.valorFornecedor) * me.quantidade ELSE 0 END)" +
+            "   COALESCE(SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END), 0) - " +
+            "   COALESCE(SUM(CASE WHEN me.tipo = 'ENTRADA' THEN me.quantidade ELSE 0 END), 0), " +
+            "   COALESCE(SUM(CASE WHEN me.tipo = 'SAIDA' THEN (p.valorVenda - p.valorFornecedor) * me.quantidade ELSE 0 END), 0) - " +
+            "   COALESCE(SUM(CASE WHEN me.tipo = 'ENTRADA' THEN (p.valorVenda - p.valorFornecedor) * me.quantidade ELSE 0 END), 0)" +
             ") " +
             "FROM MovimentacaoEstoque me " +
             "LEFT JOIN me.produto p " +
@@ -45,14 +47,17 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("SELECT new br.com.rodrigo.api.controleestoque.model.response.TipoProdutoEstoqueResponse(" +
             "   tp.nome, " +
-            "   SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END), " +
-            "   SUM(p.quantidadeEstoque)" +
+            "   SUM(CASE WHEN me.tipo = 'SAIDA' THEN me.quantidade ELSE 0 END) - " +
+            "   SUM(CASE WHEN me.tipo = 'ENTRADA' THEN me.quantidade ELSE 0 END), " +
+            "   (SELECT SUM(p.quantidadeEstoque) " +
+            "    FROM Produto p " +
+            "    WHERE p.tipoProduto.id = tp.id " +
+            "      AND p.unidade.id = me.unidade.id)" +
             ") " +
             "FROM MovimentacaoEstoque me " +
             "JOIN me.produto.tipoProduto tp " +
-            "LEFT JOIN me.produto p " +
             "WHERE me.unidade.id = :unidadeId " +
-            "GROUP BY tp.nome")
+            "GROUP BY tp.nome, tp.id, me.unidade.id")
     List<TipoProdutoEstoqueResponse> buscarEstoquePorTipoProduto(@Param("unidadeId") Long unidadeId);
 
 }

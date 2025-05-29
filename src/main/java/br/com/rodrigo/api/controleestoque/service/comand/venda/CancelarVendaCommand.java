@@ -14,6 +14,7 @@ import br.com.rodrigo.api.controleestoque.service.strategy.MovimentacaoEstoqueSe
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @RequiredArgsConstructor
 public class CancelarVendaCommand implements VendaCommand {
@@ -48,10 +49,17 @@ public class CancelarVendaCommand implements VendaCommand {
         );
 
         BigDecimal acrescimoPercentual = venda.getFormaDePagamento().getPorcentagemAcrescimo();
-        BigDecimal acrescimoDecimal = acrescimoPercentual.divide(BigDecimal.valueOf(100));
-        BigDecimal valorComAcrescimo = item.getValorTotal().add(item.getValorTotal().multiply(acrescimoDecimal));
+        RegistrarMovimentacaoCommand command = getRegistrarMovimentacaoCommand(item, venda, acrescimoPercentual);
+        command.executar();
+    }
 
-        RegistrarMovimentacaoCommand command = new RegistrarMovimentacaoCommand(
+    private RegistrarMovimentacaoCommand getRegistrarMovimentacaoCommand(ItemVenda item, Venda venda, BigDecimal acrescimoPercentual) {
+        BigDecimal acrescimoDecimal = acrescimoPercentual.divide(new BigDecimal("100.00"), 2, RoundingMode.HALF_UP);
+        BigDecimal valorComAcrescimo = item.getValorTotal()
+                .add(item.getValorTotal().multiply(acrescimoDecimal))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return new RegistrarMovimentacaoCommand(
                 caixaRepository,
                 movimentacaoRepository,
                 venda.getCaixa().getId(),
@@ -59,6 +67,5 @@ public class CancelarVendaCommand implements VendaCommand {
                 TipoMovimentacao.SAIDA,
                 "Cancelamento da venda ID: " + venda.getId()
         );
-        command.executar();
     }
 }

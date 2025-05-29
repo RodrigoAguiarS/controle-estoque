@@ -29,7 +29,7 @@ public class CaixaUtil {
 
     public void validarCaixaAtivo(Caixa caixa) {
         if (caixa == null || !caixa.getAtivo()) {
-            throw new ObjetoNaoEncontradoException(MensagensError.CAIXA_NAO_ENCONTRADO.getMessage(
+            throw new ViolacaoIntegridadeDadosException(MensagensError.VENDA_NAO_REALIZADA_NAO_EXISTE_CAIXA_ABERTO.getMessage(
                     UsuarioContext.getUsuarioLogado().getId()));
         }
     }

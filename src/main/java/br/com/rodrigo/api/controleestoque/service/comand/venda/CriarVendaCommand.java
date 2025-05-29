@@ -13,6 +13,7 @@ import br.com.rodrigo.api.controleestoque.model.form.ItemVendaForm;
 import br.com.rodrigo.api.controleestoque.model.form.VendaForm;
 import br.com.rodrigo.api.controleestoque.model.response.FormaDePagamentoResponse;
 import br.com.rodrigo.api.controleestoque.repository.CaixaRepository;
+import br.com.rodrigo.api.controleestoque.repository.MovimentacaoCaixaRepository;
 import br.com.rodrigo.api.controleestoque.repository.ProdutoRepository;
 import br.com.rodrigo.api.controleestoque.repository.VendaRepository;
 import br.com.rodrigo.api.controleestoque.service.IFormaDePagamento;
@@ -39,6 +40,7 @@ public class CriarVendaCommand implements VendaCommand {
     private final ProdutoRepository produtoRepository;
     private final IFormaDePagamento formaDePagamentoService;
     private final MovimentacaoEstoqueService movimentacaoService;
+    private final MovimentacaoCaixaRepository movimentacaoRepository;
     private final CalculoValorTotalStrategy calculoValorTotalStrategy;
     private final CaixaUtil caixaUtil;
     private final CaixaRepository caixaRepository;
@@ -53,7 +55,8 @@ public class CriarVendaCommand implements VendaCommand {
     public void executar() {
 
         Caixa caixa = caixaUtil.getCaixaDoUsuarioLogado().orElseThrow(() -> new ObjetoNaoEncontradoException(
-                MensagensError.CAIXA_NAO_ENCONTRADO.getMessage(UsuarioContext.getUsuarioLogado().getId())));
+                MensagensError.VENDA_NAO_REALIZADA_NAO_EXISTE_CAIXA_ABERTO.getMessage(UsuarioContext.getUsuarioLogado().getId())));
+
         caixaUtil.validarCaixaAtivo(caixa);
 
         Set<Long> produtoIds = vendaForm.getItens().stream()
@@ -96,6 +99,7 @@ public class CriarVendaCommand implements VendaCommand {
         RegistrarVendaCommand registrarVendaCommand = new RegistrarVendaCommand(
                 caixaRepository,
                 vendaRepository,
+                movimentacaoRepository,
                 caixa.getId(),
                 venda
         );

@@ -57,6 +57,7 @@ public class VendaServiceImpl implements IVenda {
                 produtoRepository,
                 formaDePagamentoService,
                 movimentacaoService,
+                movimentacaoRepository,
                 calculoValorTotalStrategy,
                 caixaUtil,
                 caixaRepository,

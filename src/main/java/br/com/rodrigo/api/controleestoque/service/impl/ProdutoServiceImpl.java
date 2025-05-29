@@ -130,7 +130,7 @@ public class ProdutoServiceImpl implements IProduto {
 
     private BigDecimal calcularValorVenda(BigDecimal valorFornecedor) {
         BigDecimal fatorMultiplicacao = calculoValorVenda.calcularValorVenda(valorFornecedor)
-                .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP)
+                .divide(new BigDecimal("100.00"), 2, RoundingMode.HALF_UP)
                 .add(BigDecimal.ONE);
 
         return valorFornecedor.multiply(fatorMultiplicacao)

@@ -1,7 +1,11 @@
 package br.com.rodrigo.api.controleestoque.rest;
+
 import br.com.rodrigo.api.controleestoque.model.MovimentacaoEstoque;
+import br.com.rodrigo.api.controleestoque.model.response.CaixaDetalhesResponse;
 import br.com.rodrigo.api.controleestoque.model.response.ProdutoLucroResponse;
 import br.com.rodrigo.api.controleestoque.model.response.TipoProdutoEstoqueResponse;
+import br.com.rodrigo.api.controleestoque.model.response.VendasPorFormaPagamentoResponse;
+import br.com.rodrigo.api.controleestoque.model.response.VendasPorUnidadeResponse;
 import br.com.rodrigo.api.controleestoque.service.IGraficos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +39,21 @@ public class GraficoController {
     public ResponseEntity<List<MovimentacaoEstoque>> buscarUltimasMovimentacoes(@RequestParam(defaultValue = "3") int limite) {
         List<MovimentacaoEstoque> movimentacoes = graficosService.buscarUltimasMovimentacoes(limite);
         return ResponseEntity.ok(movimentacoes);
+    }
+
+    @GetMapping("/caixa/info")
+    public ResponseEntity<CaixaDetalhesResponse> obterInformacoesCaixa() {
+        CaixaDetalhesResponse caixaInfo = graficosService.buscarInformacoesCaixaUsuarioLogado();
+        return ResponseEntity.ok(caixaInfo);
+    }
+
+    @GetMapping("/vendas-por-unidade")
+    public List<VendasPorUnidadeResponse> buscarVendasPorUnidade() {
+        return graficosService.buscarVendasPorUnidade();
+    }
+
+    @GetMapping("/vendas-por-forma-pagamento")
+    public List<VendasPorFormaPagamentoResponse> buscarVendasPorFormaPagamento() {
+        return graficosService.buscarVendasPorFormaPagamento();
     }
 }

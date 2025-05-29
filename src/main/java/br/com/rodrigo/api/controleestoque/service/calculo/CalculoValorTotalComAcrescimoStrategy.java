@@ -16,7 +16,7 @@ public class CalculoValorTotalComAcrescimoStrategy implements CalculoVendaStrate
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal acrescimo = venda.getFormaDePagamento().getPorcentagemAcrescimo()
-                .divide(new BigDecimal("100.00"), 4, RoundingMode.HALF_UP);
+                .divide(new BigDecimal("100.00"), 2, RoundingMode.HALF_UP);
         BigDecimal valorAcrescimo = valorTotal.multiply(acrescimo);
 
         return valorTotal.add(valorAcrescimo).setScale(2, RoundingMode.HALF_UP);
